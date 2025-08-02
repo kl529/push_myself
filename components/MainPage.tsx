@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Calendar, CheckCircle, Book, Heart, BarChart3, Target, Lightbulb, Coffee, Moon, TrendingUp, Plus, Trash2, Edit3, Save, RefreshCw, Star } from 'lucide-react';
+import { Calendar, CheckCircle, Book, Heart, BarChart3, Target, Lightbulb, Coffee, Moon, TrendingUp, Plus, Trash2, Save, RefreshCw, Star } from 'lucide-react';
 
 // 타입 정의
 interface Todo {
@@ -73,7 +73,7 @@ const SelfDevelopmentTracker = () => {
   const [showAffirmation, setShowAffirmation] = useState(false);
 
   // 데이터 구조 초기화
-  const initializeData = (date: string): DayData => ({
+  const initializeData = (): DayData => ({
     todos: [],
     dailyThought: '',
     quote: '',
@@ -127,7 +127,7 @@ const SelfDevelopmentTracker = () => {
 
   // 현재 날짜 데이터 가져오기
   const getCurrentDayData = () => {
-    return data[currentDate] || initializeData(currentDate);
+    return data[currentDate] || initializeData();
   };
 
   // 날짜별 데이터 업데이트
@@ -226,7 +226,7 @@ const SelfDevelopmentTracker = () => {
               <Book className="h-6 w-6 lg:h-8 lg:w-8 mr-3" />
               오늘의 명언
             </h3>
-            <p className="text-lg lg:text-xl xl:text-2xl italic leading-relaxed">"{dailyQuote}"</p>
+            <p className="text-lg lg:text-xl xl:text-2xl italic leading-relaxed">&ldquo;{dailyQuote}&rdquo;</p>
           </div>
           <button
             onClick={refreshQuote}
