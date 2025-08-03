@@ -1,0 +1,58 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%)"/>
+  
+  <!-- Background Pattern -->
+  <circle cx="200" cy="200" r="100" fill="white" opacity="0.1"/>
+  <circle cx="1000" cy="400" r="150" fill="white" opacity="0.1"/>
+  <circle cx="800" cy="150" r="80" fill="white" opacity="0.1"/>
+  
+  <!-- Main Icon -->
+  <g transform="translate(200, 165)">
+    <circle cx="200" cy="150" r="120" fill="white"/>
+    
+    <!-- 진짜 불꽃 로고 -->
+    <g transform="translate(200, 150)">
+      <!-- 불꽃 바닥 (가장 큰 부분) -->
+      <path d="M-80 120 L-40 80 L40 80 L80 120 L60 140 L-60 140 Z" fill="#DC2626"/>
+      
+      <!-- 불꽃 중간 -->
+      <path d="M-60 80 L-30 40 L30 40 L60 80 L45 100 L-45 100 Z" fill="#EF4444"/>
+      
+      <!-- 불꽃 상단 -->
+      <path d="M-40 40 L-20 0 L20 0 L40 40 L30 60 L-30 60 Z" fill="#F87171"/>
+      
+      <!-- 불꽃 끝 -->
+      <path d="M-20 0 L-10 -20 L10 -20 L20 0 L15 20 L-15 20 Z" fill="#FCA5A5"/>
+      
+      <!-- 불꽃 내부 하이라이트 -->
+      <path d="M-60 80 L-30 40 L30 40 L60 80 L45 100 L-45 100 Z" fill="#FEE2E2" opacity="0.3"/>
+      <path d="M-40 40 L-20 0 L20 0 L40 40 L30 60 L-30 60 Z" fill="#FEE2E2" opacity="0.4"/>
+    </g>
+  </g>
+  
+  <!-- Text -->
+  <text x="450" y="200" font-family="Arial, sans-serif" font-size="64" font-weight="bold" fill="white">
+    Push Myself
+  </text>
+  <text x="450" y="260" font-family="Arial, sans-serif" font-size="32" fill="white" opacity="0.9">
+    나를 넘어라
+  </text>
+  <text x="450" y="320" font-family="Arial, sans-serif" font-size="24" fill="white" opacity="0.8">
+    목표 설정 • 일기 작성 • 통계 분석
+  </text>
+  
+  <!-- Features -->
+  <g transform="translate(450, 380)">
+    <circle cx="15" cy="15" r="8" fill="#10B981"/>
+    <text x="35" y="20" font-family="Arial, sans-serif" font-size="18" fill="white">목표 관리</text>
+    
+    <circle cx="15" cy="45" r="8" fill="#F59E0B"/>
+    <text x="35" y="50" font-family="Arial, sans-serif" font-size="18" fill="white">일기 작성</text>
+    
+    <circle cx="15" cy="75" r="8" fill="#EF4444"/>
+    <text x="35" y="80" font-family="Arial, sans-serif" font-size="18" fill="white">통계 분석</text>
+    
+    <circle cx="15" cy="105" r="8" fill="#8B5CF6"/>
+    <text x="35" y="110" font-family="Arial, sans-serif" font-size="18" fill="white">습관 추적</text>
+  </g>
+</svg> 
