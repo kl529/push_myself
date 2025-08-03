@@ -1,0 +1,26 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 배경 원 -->
+  <circle cx="256" cy="256" r="256" fill="#3B82F6"/>
+  
+  <!-- 중앙 흰색 원 -->
+  <circle cx="256" cy="256" r="180" fill="white"/>
+  
+  <!-- 진짜 불꽃 로고 -->
+  <g transform="translate(256, 256)">
+    <!-- 불꽃 바닥 (가장 큰 부분) -->
+    <path d="M-120 180 L-60 120 L60 120 L120 180 L90 210 L-90 210 Z" fill="#DC2626"/>
+    
+    <!-- 불꽃 중간 -->
+    <path d="M-90 120 L-45 60 L45 60 L90 120 L67.5 150 L-67.5 150 Z" fill="#EF4444"/>
+    
+    <!-- 불꽃 상단 -->
+    <path d="M-60 60 L-30 0 L30 0 L60 60 L45 90 L-45 90 Z" fill="#F87171"/>
+    
+    <!-- 불꽃 끝 -->
+    <path d="M-30 0 L-15 -30 L15 -30 L30 0 L22.5 30 L-22.5 30 Z" fill="#FCA5A5"/>
+    
+    <!-- 불꽃 내부 하이라이트 -->
+    <path d="M-90 120 L-45 60 L45 60 L90 120 L67.5 150 L-67.5 150 Z" fill="#FEE2E2" opacity="0.3"/>
+    <path d="M-60 60 L-30 0 L30 0 L60 60 L45 90 L-45 90 Z" fill="#FEE2E2" opacity="0.4"/>
+  </g>
+</svg> 
