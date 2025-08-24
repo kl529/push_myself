@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Coffee, Lightbulb, Plus, X } from 'lucide-react';
-import { DayData, ThoughtItem } from '../../shared/data';
+import { DayData, Thought } from '../../shared/data';
 
 interface ThoughtsTabProps {
   dayData: DayData;
@@ -16,10 +16,11 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
 
   const addMorningThought = () => {
     if (newMorningThought.trim()) {
-      const newThought: ThoughtItem = {
+      const newThought: Thought = {
         id: Date.now(),
         text: newMorningThought.trim(),
-        timestamp: new Date().toISOString()
+        type: 'morning',
+        date: new Date().toISOString().split('T')[0]
       };
       updateCurrentDayData({
         thoughts: [...(dayData.thoughts || []), newThought]
@@ -30,19 +31,20 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
 
   const removeMorningThought = (id: number) => {
     updateCurrentDayData({
-      morningThoughts: (dayData.morningThoughts || []).filter(thought => thought.id !== id)
+      thoughts: (dayData.thoughts || []).filter(thought => thought.id && thought.id !== id)
     });
   };
 
   const addDailyIdea = () => {
     if (newDailyIdea.trim()) {
-      const newIdea: ThoughtItem = {
+      const newIdea: Thought = {
         id: Date.now(),
         text: newDailyIdea.trim(),
-        timestamp: new Date().toISOString()
+        type: 'idea',
+        date: new Date().toISOString().split('T')[0]
       };
       updateCurrentDayData({
-        dailyIdeas: [...(dayData.dailyIdeas || []), newIdea]
+        thoughts: [...(dayData.thoughts || []), newIdea]
       });
       setNewDailyIdea('');
     }
@@ -50,7 +52,7 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
 
   const removeDailyIdea = (id: number) => {
     updateCurrentDayData({
-      dailyIdeas: (dayData.dailyIdeas || []).filter(idea => idea.id !== id)
+      thoughts: (dayData.thoughts || []).filter(thought => thought.id && thought.id !== id)
     });
   };
 
@@ -82,20 +84,20 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
         </div>
 
         <div className="space-y-3">
-          {(dayData.morningThoughts || []).map((thought) => (
+          {(dayData.thoughts || []).filter(thought => thought.type === 'morning' && thought.id).map((thought) => (
             <div key={thought.id} className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-200">
               <div className="flex-1">
                 <p className="text-lg lg:text-xl text-gray-800">{thought.text}</p>
               </div>
               <button
-                onClick={() => removeMorningThought(thought.id)}
+                onClick={() => removeMorningThought(thought.id!)}
                 className="text-red-500 hover:text-red-700 p-1"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
           ))}
-          {(dayData.morningThoughts || []).length === 0 && (
+          {(dayData.thoughts || []).filter(thought => thought.type === 'morning' && thought.id).length === 0 && (
             <p className="text-gray-500 text-center py-4">아직 아침 생각이 없습니다. 위에서 추가해보세요!</p>
           )}
         </div>
@@ -127,20 +129,20 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
         </div>
 
         <div className="space-y-3">
-          {(dayData.dailyIdeas || []).map((idea) => (
+          {(dayData.thoughts || []).filter(thought => thought.type === 'idea' && thought.id).map((idea) => (
             <div key={idea.id} className="flex items-start gap-3 p-4 bg-green-50 rounded-xl border border-green-200">
               <div className="flex-1">
                 <p className="text-lg lg:text-xl text-gray-800">{idea.text}</p>
               </div>
               <button
-                onClick={() => removeDailyIdea(idea.id)}
+                onClick={() => removeDailyIdea(idea.id!)}
                 className="text-red-500 hover:text-red-700 p-1"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
           ))}
-          {(dayData.dailyIdeas || []).length === 0 && (
+          {(dayData.thoughts || []).filter(thought => thought.type === 'idea' && thought.id).length === 0 && (
             <p className="text-gray-500 text-center py-4">아직 아이디어가 없습니다. 위에서 추가해보세요!</p>
           )}
         </div>
