@@ -3,22 +3,18 @@ import { DayData, Data, Stats, MoodData, MustDoItem } from './types';
 // 데이터 구조 초기화
 export const initializeData = (): DayData => ({
   todos: [],
-  completedItems: [],
-  dailyThought: '',
-  quote: '',
-  diary: '',
-  morningThoughts: [],
-  mood: 3,
-  tasksReview: '',
-  dailySummary: '',
-  gratitude: '', // 감사일기 추가
-  selfAffirmation: '',
-  mustDo: [
-    { id: 1, text: '', completed: false, order: 0 },
-    { id: 2, text: '', completed: false, order: 1 },
-    { id: 3, text: '', completed: false, order: 2 }
-  ],
-  dailyIdeas: []
+  thoughts: [],
+  dailyReport: {
+    date: new Date().toISOString().split('T')[0],
+    summary: '',
+    gratitude: '',
+    lessons_learned: '',
+    tomorrow_goals: '',
+    mood: '보통',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  diary: []
 });
 
 // 로컬스토리지에서 데이터 로드
@@ -57,18 +53,18 @@ export const calculateStats = (data: Data): Stats => {
     return acc + (data[date].todos?.filter(todo => todo.completed).length || 0);
   }, 0);
   
-  const completedItems = allDates.reduce((acc: number, date: string) => {
-    return acc + (data[date].completedItems?.length || 0);
-  }, 0);
-  
   const averageMood = allDates.length > 0 
-    ? allDates.reduce((acc: number, date: string) => acc + (data[date].mood || 3), 0) / allDates.length
+    ? allDates.reduce((acc: number, date: string) => {
+        const mood = data[date].dailyReport?.mood || '보통';
+        return acc + (typeof mood === 'string' 
+          ? (mood === '좋음' ? 4 : mood === '보통' ? 3 : mood === '나쁨' ? 2 : 1)
+          : mood);
+      }, 0) / allDates.length
     : 3;
   
   return { 
     totalDays, 
     completedTodos, 
-    completedItems,
     averageMood: averageMood.toFixed(1) 
   };
 };
@@ -94,13 +90,20 @@ export const getLast7DaysData = (data: Data): MoodData[] => {
     return date.toISOString().split('T')[0];
   }).reverse();
 
-  return last7Days.map(date => ({
-    date: new Date(date).getMonth() + 1 + '/' + new Date(date).getDate(),
-    mood: data[date]?.mood || 0,
-    todos: data[date]?.todos?.length || 0,
-    completed: data[date]?.todos?.filter(t => t.completed).length || 0,
-    completedItems: data[date]?.completedItems?.length || 0
-  }));
+  return last7Days.map(date => {
+    const dayData = data[date];
+    const mood = dayData?.dailyReport?.mood || '보통';
+    const moodValue = typeof mood === 'string' 
+      ? (mood === '좋음' ? 4 : mood === '보통' ? 3 : mood === '나쁨' ? 2 : 1)
+      : mood;
+    
+    return {
+      date: new Date(date).getMonth() + 1 + '/' + new Date(date).getDate(),
+      mood: moodValue,
+      todos: dayData?.todos?.length || 0,
+      completed: dayData?.todos?.filter(t => t.completed).length || 0,
+    };
+  });
 };
 
 // 데이터 마이그레이션 (기존 문자열 형식에서 배열 형식으로)
