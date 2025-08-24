@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Coffee, Lightbulb, Plus, X } from 'lucide-react';
-import { DayData, ThoughtItem } from '../../data';
+import { DayData, ThoughtItem } from '../../shared/data';
 
 interface ThoughtsTabProps {
   dayData: DayData;
@@ -22,7 +22,7 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
         timestamp: new Date().toISOString()
       };
       updateCurrentDayData({
-        morningThoughts: [...(dayData.morningThoughts || []), newThought]
+        thoughts: [...(dayData.thoughts || []), newThought]
       });
       setNewMorningThought('');
     }
@@ -61,8 +61,7 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
           <Coffee className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-amber-600" />
           아침 생각
         </h3>
-        
-        {/* 새로운 아침 생각 추가 */}
+       
         <div className="mb-6">
           <div className="flex gap-2">
             <input
@@ -82,7 +81,6 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
           </div>
         </div>
 
-        {/* 아침 생각 목록 */}
         <div className="space-y-3">
           {(dayData.morningThoughts || []).map((thought) => (
             <div key={thought.id} className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-200">
@@ -108,8 +106,7 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
           <Lightbulb className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-yellow-600" />
           하루 생각
         </h3>
-        
-        {/* 새로운 아이디어 추가 */}
+       
         <div className="mb-6">
           <div className="flex gap-2">
             <input
@@ -129,7 +126,6 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
           </div>
         </div>
 
-        {/* 아이디어 목록 */}
         <div className="space-y-3">
           {(dayData.dailyIdeas || []).map((idea) => (
             <div key={idea.id} className="flex items-start gap-3 p-4 bg-green-50 rounded-xl border border-green-200">
@@ -153,4 +149,4 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
   );
 };
 
-export default ThoughtsTab; 
+export default ThoughtsTab;

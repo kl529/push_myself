@@ -67,6 +67,7 @@ export interface DayData {
   thoughts: Thought[];
   dailyReport: DailyReport;
   diary: Diary[];
+  completedItems?: CompletedItem[]; // 기존 호환성을 위한 필드
 }
 
 export interface Data {

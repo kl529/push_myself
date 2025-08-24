@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { CheckCircle, Plus, Trash2, Save, X, GripVertical, ExternalLink, FileText, Target } from 'lucide-react';
-import { Todo, DayData, MustDoItem } from '../../data';
+import { CheckCircle, Plus, Trash2, Save, X, GripVertical, ExternalLink, FileText } from 'lucide-react';
+import { Todo, DayData } from '../../shared/data';
 import {
   DndContext,
   closestCenter,
@@ -333,12 +333,6 @@ const TodoTab: React.FC<TodoTabProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [completedModalTodo, setCompletedModalTodo] = useState<Todo | null>(null);
   const [isCompletedModalOpen, setIsCompletedModalOpen] = useState(false);
-  const [mustDoTexts, setMustDoTexts] = useState<string[]>(['', '', '']);
-
-  // mustDo 텍스트 상태 초기화
-  React.useEffect(() => {
-    setMustDoTexts(dayData.mustDo.map(item => item.text));
-  }, [dayData.mustDo]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -357,29 +351,6 @@ const TodoTab: React.FC<TodoTabProps> = ({
     high: '높음',
     medium: '보통',
     low: '낮음'
-  };
-
-  // mustDo 업데이트 함수
-  const updateMustDo = (index: number, updates: Partial<MustDoItem>) => {
-    const newMustDo = [...dayData.mustDo];
-    newMustDo[index] = { ...newMustDo[index], ...updates };
-    updateCurrentDayData({ mustDo: newMustDo });
-  };
-
-  const toggleMustDo = (index: number) => {
-    const newMustDo = [...dayData.mustDo];
-    newMustDo[index] = { ...newMustDo[index], completed: !newMustDo[index].completed };
-    updateCurrentDayData({ mustDo: newMustDo });
-  };
-
-  const handleMustDoTextChange = (index: number, text: string) => {
-    const newTexts = [...mustDoTexts];
-    newTexts[index] = text;
-    setMustDoTexts(newTexts);
-  };
-
-  const handleMustDoTextBlur = (index: number) => {
-    updateMustDo(index, { text: mustDoTexts[index] });
   };
 
   const handleAddTodo = () => {
@@ -452,7 +423,7 @@ const TodoTab: React.FC<TodoTabProps> = ({
       const priorityOrder = { high: 3, medium: 2, low: 1 };
       const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
       if (priorityDiff !== 0) return priorityDiff;
-      return a.order - b.order;
+      return a.order_index - b.order_index;
     });
 
   // 완료된 투두들 (우선순위 순으로 정렬)
@@ -462,41 +433,11 @@ const TodoTab: React.FC<TodoTabProps> = ({
       const priorityOrder = { high: 3, medium: 2, low: 1 };
       const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
       if (priorityDiff !== 0) return priorityDiff;
-      return a.order - b.order;
+      return a.order_index - b.order_index;
     });
 
   return (
     <div className="space-y-2 lg:space-y-4">
-      {/* 오늘 꼭 해야할 것 */}
-      <div className="bg-white p-4 lg:p-6 rounded-2xl border">
-        <h3 className="text-xl lg:text-2xl font-semibold mb-6 flex items-center">
-          <Target className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-red-600" />
-          오늘 꼭 해야할 것
-        </h3>
-        <div className="space-y-4 lg:space-y-6">
-          {dayData.mustDo.map((item: MustDoItem, index: number) => (
-            <div key={item.id} className="flex items-center gap-4 p-4 bg-red-50 rounded-xl border border-red-200 mb-2">
-              <button
-                onClick={() => toggleMustDo(index)}
-                className={`p-2 rounded-lg ${item.completed ? 'text-green-600' : 'text-gray-400'}`}
-              >
-                <CheckCircle className="h-6 w-6 lg:h-8 lg:w-8" />
-              </button>
-              <input
-                type="text"
-                value={mustDoTexts[index] || ''}
-                onChange={(e) => handleMustDoTextChange(index, e.target.value)}
-                onBlur={() => handleMustDoTextBlur(index)}
-                placeholder={`${index + 1}번째 중요한 일`}
-                className={`flex-1 p-3 lg:p-4 border rounded-xl focus:ring-2 focus:ring-red-500 text-lg lg:text-xl ${
-                  item.completed ? 'line-through text-gray-500 bg-gray-100' : ''
-                }`}
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* TO DO 섹션 */}
       <div className="bg-white p-4 lg:p-6 rounded-2xl border">
         <h3 className="text-xl lg:text-2xl font-semibold mb-6 flex items-center">

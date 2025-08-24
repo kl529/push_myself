@@ -56,11 +56,11 @@ export const metadata: Metadata = {
     description: "목표 설정, 일기 작성, 통계 분석을 통해 자기계발을 도와주는 PWA 앱. 매일 매일 성장하는 당신을 위한 최고의 자기계발 도구입니다.",
     images: [
       {
-        url: '/og-image.png',
+        url: '/og-image.svg',
         width: 1200,
         height: 630,
         alt: 'Push Myself - 나를 넘어라 - 자기계발 다이어리 앱',
-        type: 'image/png',
+        type: 'image/svg+xml',
       },
     ],
   },
@@ -70,19 +70,12 @@ export const metadata: Metadata = {
     creator: '@pushmyself',
     title: "Push Myself - 나를 넘어라",
     description: "목표 설정, 일기 작성, 통계 분석을 통해 자기계발을 도와주는 PWA 앱",
-    images: ['/og-image.png'],
+    images: ['/og-image.svg'],
   },
   manifest: '/manifest.json',
   icons: {
-    icon: [
-      { url: '/favicon.ico' },
-      { url: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
-    ],
-    apple: [
-      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
-    ],
-    shortcut: ['/favicon.ico'],
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
   },
   category: 'productivity',
   classification: 'Self-Development Application',

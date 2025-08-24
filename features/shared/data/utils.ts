@@ -1,4 +1,4 @@
-import { DayData, Data, Stats, MoodData, MustDoItem } from './types';
+import { DayData, Data, Stats, MoodData, MustDoItem } from '../types/types';
 
 // 데이터 구조 초기화
 export const initializeData = (): DayData => ({
