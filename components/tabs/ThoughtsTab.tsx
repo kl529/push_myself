@@ -1,30 +1,21 @@
 import React, { useState } from 'react';
 import { Coffee, Lightbulb, Plus, X } from 'lucide-react';
-import { DayData, Thought } from '../../shared/types/types';
+import { DayData, Thought } from '../../data/types';
 
 interface ThoughtsTabProps {
   dayData: DayData;
   updateCurrentDayData: (updates: Partial<DayData>) => void;
-  showWarning: (message: string) => void;
 }
 
 const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
   dayData,
-  updateCurrentDayData,
-  showWarning
+  updateCurrentDayData
 }) => {
   const [newMorningThought, setNewMorningThought] = useState('');
   const [newDailyIdea, setNewDailyIdea] = useState('');
 
   const addMorningThought = () => {
     if (newMorningThought.trim()) {
-      // 아침 생각 3개 제한 체크
-      const morningThoughts = (dayData.thoughts || []).filter(thought => thought.type === 'morning');
-      if (morningThoughts.length >= 3) {
-        showWarning('아침 생각은 하루에 최대 3개까지만 추가할 수 있습니다.');
-        return;
-      }
-      
       const newThought: Thought = {
         id: Date.now(),
         text: newMorningThought.trim(),
@@ -46,13 +37,6 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
 
   const addDailyIdea = () => {
     if (newDailyIdea.trim()) {
-      // 하루 생각 3개 제한 체크
-      const dailyIdeas = (dayData.thoughts || []).filter(thought => thought.type === 'idea');
-      if (dailyIdeas.length >= 3) {
-        showWarning('하루 생각은 하루에 최대 3개까지만 추가할 수 있습니다.');
-        return;
-      }
-      
       const newIdea: Thought = {
         id: Date.now(),
         text: newDailyIdea.trim(),

@@ -84,3 +84,36 @@ export interface MoodData {
   mood: number;
   todos: number;
 } 
+
+// 주간 회고 인터페이스
+export interface WeeklyReport {
+  id?: number;
+  week_start_date: string; // 주의 시작 날짜 (월요일)
+  week_end_date: string;   // 주의 마지막 날짜 (일요일)
+  what_went_well: string;  // 이번 주에 잘한 것
+  what_didnt_go_well: string; // 아쉬운 점
+  what_learned: string;    // 배운 점 / 인사이트
+  next_week_goals: string; // 다음 주 목표 / 전략
+  weekly_summary: string;  // 한 줄 회고
+  created_at: string;
+  updated_at: string;
+}
+
+// 자기 암시 설정 인터페이스
+export interface SelfAffirmation {
+  id?: number;
+  affirmation_text: string; // 자기 암시 문구
+  is_active: boolean;       // 현재 사용 중인지
+  display_order: number;    // 표시 순서
+  created_at: string;
+  updated_at: string;
+}
+
+// 확장된 통계를 위한 주간 데이터
+export interface WeeklyStats {
+  week_start_date: string;
+  daily_reports_written: number;    // 작성한 데일리 리포트 수
+  completed_tasks: number;          // 완료한 작업 수
+  mood_average: number;             // 평균 기분 (1-5)
+  thoughts_count: number;           // 생각 기록 수
+}

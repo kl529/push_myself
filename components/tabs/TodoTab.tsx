@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CheckCircle, Plus, Trash2, Save, X, GripVertical, ExternalLink, FileText } from 'lucide-react';
-import { Todo, DayData } from '../../shared/types/types';
+import { Todo, DayData } from '../../data/types';
 import {
   DndContext,
   closestCenter,
@@ -27,8 +27,6 @@ interface TodoTabProps {
   deleteTodo: (id: number) => void;
   updateTodo: (id: number, updates: Partial<Todo>) => void;
   reorderTodos: (oldIndex: number, newIndex: number) => void;
-  updateCurrentDayData: (updates: Partial<DayData>) => void;
-  showWarning: (message: string) => void;
 }
 
 // 모달 컴포넌트
@@ -322,9 +320,7 @@ const TodoTab: React.FC<TodoTabProps> = ({
   toggleTodo,
   deleteTodo,
   updateTodo,
-  reorderTodos,
-  updateCurrentDayData,
-  showWarning
+  reorderTodos
 }) => {
   const [newTodo, setNewTodo] = useState('');
   const [newTodoPriority, setNewTodoPriority] = useState<'high' | 'medium' | 'low'>('medium');
@@ -357,13 +353,6 @@ const TodoTab: React.FC<TodoTabProps> = ({
 
   const handleAddTodo = () => {
     if (newTodo.trim()) {
-      // 하루 3개 제한 체크
-      const incompleteTodos = dayData.todos.filter(todo => !todo.completed);
-      if (incompleteTodos.length >= 3) {
-        showWarning('하루에 최대 3개의 할 일만 추가할 수 있습니다.');
-        return;
-      }
-      
       addTodo(newTodo, newTodoPriority);
       setNewTodo('');
       setNewTodoPriority('medium');

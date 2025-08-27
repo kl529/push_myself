@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { List, Moon, Plus, Trash2, Heart, Smile, BookOpen, MessageSquare } from 'lucide-react';
-import { DayData, Diary } from '../../shared/types/types';
-import { itemCategories, categoryIcons } from '../../shared/data';
+import { DayData, Diary } from '../../data/types';
+
+// 카테고리 설정
+const itemCategories = [
+  '업무', '학습', '운동', '취미', '사람들', '기타'
+];
+
+const categoryIcons: { [key: string]: string } = {
+  '업무': '💼',
+  '학습': '📚',
+  '운동': '💪',
+  '취미': '🎨',
+  '사람들': '👥',
+  '기타': '📝'
+};
 
 interface DiaryTabProps {
   dayData: DayData;
@@ -140,8 +153,8 @@ const DiaryTab: React.FC<DiaryTabProps> = ({
               className="p-4 lg:p-5 border rounded-xl focus:ring-2 focus:ring-purple-500 text-lg lg:text-xl bg-white"
             >
               {itemCategories.map(category => (
-                <option key={category.id} value={category.id}>
-                  {category.icon} {category.name}
+                <option key={category} value={category}>
+                  {categoryIcons[category]} {category}
                 </option>
               ))}
             </select>

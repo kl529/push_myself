@@ -5,7 +5,8 @@ import {
   Stats, 
   MoodData, 
   DailyReport, 
-  Diary
+  Diary,
+  Todo
 } from '../data/types';
 import { updateTodosInSupabase } from '../features/todos/services/todosService';
 import { updateThoughtsInSupabase } from '../features/thoughts/services/thoughtsService';
@@ -284,6 +285,113 @@ const updateDayDataInLocalStorage = (date: string, dayData: DayData): void => {
     localStorage.setItem('selfDevelopmentData', JSON.stringify(currentData));
   } catch (error) {
     console.error('로컬스토리지 날짜별 데이터 업데이트 중 오류:', error);
+  }
+};
+
+// 할일 관리 함수들
+export const addTodo = async (date: string, todoData: Partial<Todo>): Promise<Todo | null> => {
+  if (!isSupabaseAvailable()) {
+    // 로컬스토리지 폴백
+    const newTodo: Todo = {
+      id: Date.now(),
+      text: todoData.text || '',
+      completed: false,
+      priority: todoData.priority || 'medium',
+      order_index: todoData.order_index || 0,
+      order: todoData.order_index || 0,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    return newTodo;
+  }
+
+  try {
+    const { data, error } = await supabase!
+      .from('todos')
+      .insert([{
+        date,
+        text: todoData.text,
+        completed: todoData.completed || false,
+        priority: todoData.priority || 'medium',
+        order_index: todoData.order_index || 0,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    
+    return {
+      ...data,
+      order: data.order_index
+    };
+  } catch (error) {
+    console.error('Todo 추가 중 오류:', error);
+    return null;
+  }
+};
+
+export const updateTodo = async (id: number, updates: Partial<Todo>): Promise<void> => {
+  if (!isSupabaseAvailable()) {
+    return;
+  }
+
+  try {
+    const { error } = await supabase!
+      .from('todos')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Todo 업데이트 중 오류:', error);
+  }
+};
+
+export const deleteTodo = async (id: number): Promise<void> => {
+  if (!isSupabaseAvailable()) {
+    return;
+  }
+
+  try {
+    const { error } = await supabase!
+      .from('todos')
+      .delete()
+      .eq('id', id);
+
+    if (error) throw error;
+  } catch (error) {
+    console.error('Todo 삭제 중 오류:', error);
+  }
+};
+
+export const reorderTodos = async (date: string, todos: Todo[]): Promise<void> => {
+  if (!isSupabaseAvailable()) {
+    return;
+  }
+
+  try {
+    const updates = todos.map(todo => ({
+      id: todo.id,
+      order_index: todo.order_index,
+      updated_at: new Date().toISOString()
+    }));
+
+    for (const update of updates) {
+      await supabase!
+        .from('todos')
+        .update({ 
+          order_index: update.order_index,
+          updated_at: update.updated_at
+        })
+        .eq('id', update.id);
+    }
+  } catch (error) {
+    console.error('Todo 순서 변경 중 오류:', error);
   }
 };
 
