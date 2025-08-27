@@ -84,4 +84,32 @@ export interface MoodData {
   date: string;
   mood: number;
   todos: number;
+}
+
+export interface WeeklyReport {
+  id?: number;
+  week_start_date: string;
+  week_end_date: string;
+  what_went_well: string;
+  what_didnt_go_well: string;
+  what_learned: string;
+  next_week_goals: string;
+  weekly_summary: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface WeeklyStats {
+  id?: number;
+  week_start_date: string;
+  week_end_date: string;
+  completed_tasks: number;
+  total_tasks: number;
+  mood_average: number;
+  thoughts_count: number;
+  total_diary_entries: number;
+  daily_reports_written: number;
+  completion_rate?: number;
+  created_at: string;
+  updated_at: string;
 } 

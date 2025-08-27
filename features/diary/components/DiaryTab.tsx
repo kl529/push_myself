@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { List, Moon, Plus, Trash2, Heart, Smile, BookOpen, MessageSquare } from 'lucide-react';
-import { DayData, Diary, itemCategories, categoryIcons } from '../../shared/data';
+import { DayData, Diary } from '../../shared/types/types';
+import { itemCategories, categoryIcons } from '../../shared/data';
 
 interface DiaryTabProps {
   dayData: DayData;
