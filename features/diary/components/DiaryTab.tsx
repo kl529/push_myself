@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { List, Moon, Plus, Trash2, Heart, Smile, BookOpen, MessageSquare } from 'lucide-react';
 import { DayData, Diary } from '../../shared/types/types';
 import { itemCategories, categoryIcons } from '../../shared/data';
@@ -18,6 +18,7 @@ const DiaryTab: React.FC<DiaryTabProps> = ({
 }) => {
   const [newCompletedItem, setNewCompletedItem] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('other');
+  const completedItemInputRef = useRef<HTMLInputElement>(null);
   const [summary, setSummary] = useState('');
   const [thankDiary, setThankDiary] = useState('');
   const [lessonsLearned, setLessonsLearned] = useState('');
@@ -127,17 +128,30 @@ const DiaryTab: React.FC<DiaryTabProps> = ({
         <div className="mb-6 space-y-4">
           <div className="flex gap-3 lg:gap-4">
             <input
+              ref={completedItemInputRef}
               type="text"
               value={newCompletedItem}
               onChange={(e) => setNewCompletedItem(e.target.value)}
               placeholder="오늘 했던 일을 입력하세요"
               className="flex-1 p-4 lg:p-5 border rounded-xl focus:ring-2 focus:ring-purple-500 text-lg lg:text-xl"
-              onKeyDown={(e) => e.key === 'Enter' && (addCompletedItem(newCompletedItem, selectedCategory), setNewCompletedItem(''))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  addCompletedItem(newCompletedItem, selectedCategory);
+                  setNewCompletedItem('');
+                  // 포커스 유지를 위해 더 긴 지연 후 다시 포커스 설정
+                  setTimeout(() => {
+                    if (completedItemInputRef.current) {
+                      completedItemInputRef.current.focus();
+                      completedItemInputRef.current.setSelectionRange(0, 0);
+                    }
+                  }, 200);
+                }
+              }}
             />
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="p-4 lg:p-5 border rounded-xl focus:ring-2 focus:ring-purple-500 text-lg lg:text-xl bg-white"
+              className="px-2 sm:px-3 py-4 lg:py-5 border rounded-xl focus:ring-2 focus:ring-purple-500 text-sm sm:text-base lg:text-xl bg-white min-w-[80px] max-w-[100px]"
             >
               {itemCategories.map(category => (
                 <option key={category.id} value={category.id}>
@@ -146,7 +160,17 @@ const DiaryTab: React.FC<DiaryTabProps> = ({
               ))}
             </select>
             <button
-              onClick={() => (addCompletedItem(newCompletedItem, selectedCategory), setNewCompletedItem(''))}
+              onClick={() => {
+                addCompletedItem(newCompletedItem, selectedCategory);
+                setNewCompletedItem('');
+                // 포커스 유지를 위해 더 긴 지연 후 다시 포커스 설정
+                setTimeout(() => {
+                  if (completedItemInputRef.current) {
+                    completedItemInputRef.current.focus();
+                    completedItemInputRef.current.setSelectionRange(0, 0);
+                  }
+                }, 200);
+              }}
               className="px-6 lg:px-8 py-4 lg:py-5 bg-purple-500 text-white rounded-xl hover:bg-purple-600 flex items-center text-lg lg:text-xl"
             >
               <Plus className="h-5 w-5 lg:h-6 lg:w-6" />

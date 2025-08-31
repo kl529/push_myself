@@ -87,7 +87,7 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
           {(dayData.thoughts || []).filter(thought => thought.type === 'morning' && thought.id).map((thought) => (
             <div key={thought.id} className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-200">
               <div className="flex-1">
-                <p className="text-lg lg:text-xl text-gray-800">{thought.text}</p>
+                <p className="text-lg lg:text-xl text-black">{thought.text}</p>
               </div>
               <button
                 onClick={() => removeMorningThought(thought.id!)}
@@ -98,7 +98,7 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
             </div>
           ))}
           {(dayData.thoughts || []).filter(thought => thought.type === 'morning' && thought.id).length === 0 && (
-            <p className="text-gray-500 text-center py-4">아직 아침 생각이 없습니다. 위에서 추가해보세요!</p>
+            <p className="text-black text-center py-4">아직 아침 생각이 없습니다. 위에서 추가해보세요!</p>
           )}
         </div>
       </div>
@@ -132,7 +132,7 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
           {(dayData.thoughts || []).filter(thought => thought.type === 'idea' && thought.id).map((idea) => (
             <div key={idea.id} className="flex items-start gap-3 p-4 bg-green-50 rounded-xl border border-green-200">
               <div className="flex-1">
-                <p className="text-lg lg:text-xl text-gray-800">{idea.text}</p>
+                <p className="text-lg lg:text-xl text-black">{idea.text}</p>
               </div>
               <button
                 onClick={() => removeDailyIdea(idea.id!)}
@@ -143,7 +143,7 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
             </div>
           ))}
           {(dayData.thoughts || []).filter(thought => thought.type === 'idea' && thought.id).length === 0 && (
-            <p className="text-gray-500 text-center py-4">아직 아이디어가 없습니다. 위에서 추가해보세요!</p>
+            <p className="text-black text-center py-4">아직 아이디어가 없습니다. 위에서 추가해보세요!</p>
           )}
         </div>
       </div>

@@ -8,6 +8,7 @@ import {
   Book, 
   BarChart3, 
   BookOpen,
+  Settings,
   ChevronLeft, 
   ChevronRight 
 } from 'lucide-react';
@@ -31,15 +32,14 @@ import {
 import { testSupabaseConnection, isSupabaseAvailable } from '../lib/supabase';
 
 // 탭 컴포넌트들 import
-import DashboardTab from '../features/dashboard/components/DashboardTab';
 import TodoTab from '../features/todos/components/TodoTab';
 import ThoughtsTab from '../features/thoughts/components/ThoughtsTab';
 import DiaryTab from '../features/diary/components/DiaryTab';
 import StatsTab from '../features/stats/components/StatsTab';
 import WeeklyReportTab from '../features/weekly-report/components/WeeklyReportTab';
+import SettingsTab from './tabs/SettingsTab';
 import { WeeklyReportService } from '../features/weekly-report/services/weeklyReportService';
 import PWAInstall from './PWAInstall';
-import SupabaseStatus from './SupabaseStatus';
 import Toast, { useToast } from './Toast';
 import { restoreNotificationSchedule } from '../lib/notifications';
 
@@ -66,7 +66,7 @@ const SelfDevelopmentTracker = () => {
   
   const [currentDate, setCurrentDate] = useState(new Date().toISOString().split('T')[0]);
   const [currentWeek, setCurrentWeek] = useState(getWeekStartDate(new Date()));
-  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'dashboard');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'todo');
   const [data, setData] = useState<Data>({});
   const [weeklyReports, setWeeklyReports] = useState<{ [weekStart: string]: WeeklyReport }>({});
   const [weeklyStats, setWeeklyStats] = useState<WeeklyStats[]>([]);
@@ -94,7 +94,7 @@ const SelfDevelopmentTracker = () => {
   // URL 파라미터 변경 감지
   useEffect(() => {
     const tab = searchParams.get('tab');
-    const validTabs = ['dashboard', 'todo', 'thoughts', 'diary', 'stats', 'weekly-report'];
+    const validTabs = ['todo', 'thoughts', 'diary', 'stats', 'weekly-report', 'settings'];
     if (tab && validTabs.includes(tab)) {
       setActiveTab(tab);
     }
@@ -457,11 +457,8 @@ const SelfDevelopmentTracker = () => {
   const dayData = getCurrentDayData();
 
   // 탭 컴포넌트 렌더링 함수들
-  const renderDashboardTab = () => (
-    <DashboardTab
-      dayData={dayData}
-      saveAffirmation={saveAffirmation}
-    />
+  const renderSettingsTab = () => (
+    <SettingsTab />
   );
 
   const renderTodoTab = () => (
@@ -474,6 +471,7 @@ const SelfDevelopmentTracker = () => {
       reorderTodos={reorderTodos}
       updateCurrentDayData={updateCurrentDayData}
       showWarning={showWarning}
+      saveAffirmation={saveAffirmation}
     />
   );
 
@@ -514,29 +512,25 @@ const SelfDevelopmentTracker = () => {
 
 
   const tabs = [
-    { id: 'dashboard', name: '대시보드', icon: BarChart3, component: renderDashboardTab },
     { id: 'todo', name: 'TODO', icon: CheckCircle, component: renderTodoTab },
     { id: 'thoughts', name: '생각정리', icon: Lightbulb, component: renderThoughtsTab },
     { id: 'diary', name: '일기', icon: Book, component: renderDiaryTab },
     { id: 'stats', name: '통계', icon: BarChart3, component: renderStatsTab },
     { id: 'weekly-report', name: '주간회고', icon: BookOpen, component: renderWeeklyReportTab },
+    { id: 'settings', name: '설정', icon: Settings, component: renderSettingsTab },
   ];
 
-  const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || renderDashboardTab;
+  const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || renderTodoTab;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
       <div className="max-w-7xl mx-auto p-6 lg:p-8 xl:p-12">
         {/* 헤더 */}
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl lg:text-5xl xl:text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            🔥 나를 넘어라 🔥
-          </h1>
-          <p className="text-lg lg:text-xl text-gray-600">매일 매일 성장하기 위한 기록</p>
-          
-          <div className="mt-4">
-            <SupabaseStatus onStatusChange={() => {}} />
-          </div>
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl lg:text-3xl font-semibold text-gray-800 mb-2">
+            나를 넘어라
+          </h2>
+          <p className="text-sm lg:text-base text-gray-600">매일 1% 성장하기 위해서는 매일 3개만 해도 충분합니다.</p>
         </div>
 
         {/* 간단한 날짜 선택 (특정 탭에서만 표시) */}
@@ -548,7 +542,7 @@ const SelfDevelopmentTracker = () => {
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 title="이전 날짜"
               >
-                <ChevronLeft className="h-5 w-5 text-gray-500" />
+                <ChevronLeft className="h-5 w-5 text-black" />
               </button>
               
               <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border shadow-sm">
@@ -559,7 +553,7 @@ const SelfDevelopmentTracker = () => {
                   type="date"
                   value={currentDate}
                   onChange={(e) => setCurrentDate(e.target.value)}
-                  className="text-sm font-medium text-gray-700 bg-transparent border-none outline-none cursor-pointer"
+                  className="text-sm font-medium text-black bg-transparent border-none outline-none cursor-pointer"
                 />
               </div>
               
@@ -568,15 +562,15 @@ const SelfDevelopmentTracker = () => {
                 className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 title="다음 날짜"
               >
-                <ChevronRight className="h-5 w-5 text-gray-500" />
+                <ChevronRight className="h-5 w-5 text-black" />
               </button>
             </div>
           </div>
         )}
 
-        {/* 탭 네비게이션 */}
+        {/* 탭 네비게이션 - 3개씩 배치 */}
         <div className="mb-8">
-          <div className="flex flex-wrap justify-center gap-2 lg:gap-3">
+          <div className="grid grid-cols-3 gap-2 lg:gap-3 max-w-2xl mx-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -586,14 +580,14 @@ const SelfDevelopmentTracker = () => {
                     setActiveTab(tab.id);
                     router.push(`/?tab=${tab.id}`, { scroll: false });
                   }}
-                  className={`flex items-center gap-2 px-3 py-2 lg:px-4 lg:py-3 rounded-xl font-medium transition-all duration-200 text-sm lg:text-base ${
+                  className={`flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2 px-2 sm:px-3 py-2 sm:py-3 lg:px-4 lg:py-3 rounded-xl font-medium transition-all duration-200 text-xs sm:text-sm lg:text-base ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg transform scale-105'
-                      : 'bg-white text-gray-700 hover:bg-gray-100 shadow-sm hover:shadow-md hover:scale-105'
+                      : 'bg-white text-black hover:bg-gray-100 shadow-sm hover:shadow-md hover:scale-105'
                   }`}
                 >
-                  <Icon className="h-4 w-4 lg:h-5 lg:w-5" />
-                  {tab.name}
+                  <Icon className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
+                  <span className="whitespace-nowrap">{tab.name}</span>
                 </button>
               );
             })}
@@ -606,7 +600,7 @@ const SelfDevelopmentTracker = () => {
         </div>
 
         {/* 푸터 */}
-        <div className="text-center text-gray-500 text-base lg:text-lg rounded-2xl p-6">
+        <div className="text-center text-black text-base lg:text-lg rounded-2xl p-6">
           하루가 모여 인생이 바뀐다.
         </div>
       </div>

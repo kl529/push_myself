@@ -84,7 +84,7 @@ const TodoModal: React.FC<{
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               할 일
             </label>
             <input
@@ -97,7 +97,7 @@ const TodoModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               우선순위
             </label>
             <select
@@ -112,7 +112,7 @@ const TodoModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               링크 (선택사항)
             </label>
             <input
@@ -125,7 +125,7 @@ const TodoModal: React.FC<{
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-black mb-2">
               설명 (선택사항)
             </label>
             <textarea
@@ -212,7 +212,7 @@ const SortableTodoItem: React.FC<{
       <div
         {...attributes}
         {...listeners}
-        className="cursor-grab active:cursor-grabbing p-1 text-gray-400 hover:text-gray-600"
+        className="cursor-grab active:cursor-grabbing p-1 text-black hover:text-black"
       >
         <GripVertical className="h-5 w-5" />
       </div>
@@ -220,7 +220,7 @@ const SortableTodoItem: React.FC<{
       {/* 완료 체크 */}
       <button
         onClick={() => onToggle(todo.id)}
-        className={`p-2 rounded-lg ${todo.completed ? 'text-green-600' : 'text-gray-400'}`}
+        className={`p-2 rounded-lg ${todo.completed ? 'text-green-600' : 'text-black'}`}
       >
         <CheckCircle className="h-6 w-6 lg:h-8 lg:w-8" />
       </button>
@@ -268,7 +268,7 @@ const SortableTodoItem: React.FC<{
             onClick={() => onOpenModal(todo)}
           >
             <div className="flex-1">
-              <span className={`text-lg lg:text-xl ${todo.completed ? 'text-gray-600' : ''}`}>
+              <span className={`text-lg lg:text-xl ${todo.completed ? 'text-black' : ''}`}>
                 {todo.text}
               </span>
               {(todo.link || todo.description) && (
@@ -353,6 +353,10 @@ const TodoTab: React.FC<TodoTabProps> = ({
 
   const handleAddTodo = () => {
     if (newTodo.trim()) {
+      if (sortedTodos.length >= 3) {
+        alert('오늘은 3가지 중요한 일에만 집중해보세요! 먼저 기존 할 일을 완료하거나 삭제해주세요.');
+        return;
+      }
       addTodo(newTodo, newTodoPriority);
       setNewTodo('');
       setNewTodoPriority('medium');
@@ -438,10 +442,20 @@ const TodoTab: React.FC<TodoTabProps> = ({
     <div className="space-y-2 lg:space-y-4">
       {/* TO DO 섹션 */}
       <div className="bg-white p-4 lg:p-6 rounded-2xl border">
-        <h3 className="text-xl lg:text-2xl font-semibold mb-6 flex items-center">
+        <h3 className="text-xl lg:text-2xl font-semibold mb-4 flex items-center">
           <CheckCircle className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-blue-600" />
           TO DO
         </h3>
+        
+        {/* 3개 제한 안내 메시지 */}
+        <div className="mb-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+          <p className="text-sm lg:text-base text-blue-800 text-center font-medium">
+            💪 집중력을 위해 오늘은 <span className="font-bold text-blue-900">3가지 중요한 일</span>에만 집중해보세요!
+          </p>
+          <p className="text-xs lg:text-sm text-blue-600 text-center mt-1">
+            현재 {sortedTodos.length}/3개의 할 일
+          </p>
+        </div>
         
         {/* 새 투두 추가 폼 */}
         <div className="mb-6 space-y-4">
@@ -450,7 +464,7 @@ const TodoTab: React.FC<TodoTabProps> = ({
               type="text"
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
-              placeholder="새로운 할 일을 입력하세요"
+              placeholder={sortedTodos.length >= 3 ? "3개 제한 달성! 먼저 할 일을 완료하세요" : "중요한 할 일을 입력하세요 (최대 3개)"}
               className="flex-1 p-4 lg:p-5 border rounded-xl focus:ring-2 focus:ring-blue-500 text-lg lg:text-xl"
               onKeyPress={(e) => e.key === 'Enter' && handleAddTodo()}
             />
@@ -465,7 +479,12 @@ const TodoTab: React.FC<TodoTabProps> = ({
             </select>
             <button
               onClick={handleAddTodo}
-              className="px-6 lg:px-8 py-4 lg:py-5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 flex items-center text-lg lg:text-xl"
+              disabled={sortedTodos.length >= 3}
+              className={`px-6 lg:px-8 py-4 lg:py-5 rounded-xl flex items-center text-lg lg:text-xl transition-colors ${
+                sortedTodos.length >= 3 
+                  ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                  : 'bg-blue-500 text-white hover:bg-blue-600'
+              }`}
             >
               <Plus className="h-5 w-5 lg:h-6 lg:w-6" />
             </button>
@@ -475,9 +494,10 @@ const TodoTab: React.FC<TodoTabProps> = ({
         {/* 미완료 투두 목록 */}
         <div className="space-y-3 lg:space-y-4">
           {sortedTodos.length === 0 ? (
-            <div className="text-center py-12 lg:py-16 text-gray-500">
-              <CheckCircle className="h-16 w-16 lg:h-20 lg:w-20 mx-auto mb-4 text-gray-300" />
-              <p className="text-lg lg:text-xl">아직 할 일이 없습니다. 새로운 할 일을 추가해보세요!</p>
+            <div className="text-center py-12 lg:py-16 text-black">
+              <CheckCircle className="h-16 w-16 lg:h-20 lg:w-20 mx-auto mb-4 text-black" />
+              <p className="text-lg lg:text-xl">오늘 집중할 3가지 중요한 일을 추가해보세요!</p>
+              <p className="text-sm lg:text-base mt-2 text-blue-600">하나씩 집중해서 완성하면 더 큰 성취감을 느낄 수 있어요 ✨</p>
             </div>
           ) : (
             <DndContext
