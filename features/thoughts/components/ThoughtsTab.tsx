@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Coffee, Lightbulb, Plus, X } from 'lucide-react';
 import { DayData, Thought } from '../../shared/types/types';
 
@@ -15,6 +15,9 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
 }) => {
   const [newMorningThought, setNewMorningThought] = useState('');
   const [newDailyIdea, setNewDailyIdea] = useState('');
+  
+  const morningThoughtInputRef = useRef<HTMLInputElement>(null);
+  const dailyIdeaInputRef = useRef<HTMLInputElement>(null);
 
   const addMorningThought = () => {
     if (newMorningThought.trim()) {
@@ -35,6 +38,14 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
         thoughts: [...(dayData.thoughts || []), newThought]
       });
       setNewMorningThought('');
+      
+      // 포커스 유지를 위해 더 긴 지연 후 다시 포커스 설정
+      setTimeout(() => {
+        if (morningThoughtInputRef.current) {
+          morningThoughtInputRef.current.focus();
+          morningThoughtInputRef.current.setSelectionRange(0, 0);
+        }
+      }, 200);
     }
   };
 
@@ -63,6 +74,14 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
         thoughts: [...(dayData.thoughts || []), newIdea]
       });
       setNewDailyIdea('');
+      
+      // 포커스 유지를 위해 더 긴 지연 후 다시 포커스 설정
+      setTimeout(() => {
+        if (dailyIdeaInputRef.current) {
+          dailyIdeaInputRef.current.focus();
+          dailyIdeaInputRef.current.setSelectionRange(0, 0);
+        }
+      }, 200);
     }
   };
 
@@ -83,6 +102,7 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
         <div className="mb-6">
           <div className="flex gap-2">
             <input
+              ref={morningThoughtInputRef}
               type="text"
               value={newMorningThought}
               onChange={(e) => setNewMorningThought(e.target.value)}
@@ -128,6 +148,7 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
         <div className="mb-6">
           <div className="flex gap-2">
             <input
+              ref={dailyIdeaInputRef}
               type="text"
               value={newDailyIdea}
               onChange={(e) => setNewDailyIdea(e.target.value)}
