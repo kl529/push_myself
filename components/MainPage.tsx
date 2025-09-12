@@ -94,7 +94,7 @@ const SelfDevelopmentTracker = () => {
   // URL 파라미터 변경 감지
   useEffect(() => {
     const tab = searchParams.get('tab');
-    const validTabs = ['todo', 'thoughts', 'diary', 'stats', 'weekly-report', 'settings'];
+    const validTabs = ['todo', 'thoughts', 'diary', 'stats'];
     if (tab && validTabs.includes(tab)) {
       setActiveTab(tab);
     }
@@ -414,6 +414,10 @@ const SelfDevelopmentTracker = () => {
     setCurrentDate(current.toISOString().split('T')[0]);
   };
 
+  const goToToday = () => {
+    setCurrentDate(new Date().toISOString().split('T')[0]);
+  };
+
   // 주간 네비게이션
   const handleNavigateWeek = (direction: 'prev' | 'next') => {
     const current = new Date(currentWeek);
@@ -495,9 +499,6 @@ const SelfDevelopmentTracker = () => {
   const renderStatsTab = () => (
     <StatsTab
       data={data}
-      weeklyStats={weeklyStats}
-      onNavigateWeek={handleNavigateWeek}
-      currentWeek={currentWeek}
     />
   );
 
@@ -512,12 +513,12 @@ const SelfDevelopmentTracker = () => {
 
 
   const tabs = [
-    { id: 'todo', name: 'TODO', icon: CheckCircle, component: renderTodoTab },
-    { id: 'thoughts', name: '생각정리', icon: Lightbulb, component: renderThoughtsTab },
-    { id: 'diary', name: '일기', icon: Book, component: renderDiaryTab },
-    { id: 'stats', name: '통계', icon: BarChart3, component: renderStatsTab },
-    { id: 'weekly-report', name: '주간회고', icon: BookOpen, component: renderWeeklyReportTab },
-    { id: 'settings', name: '설정', icon: Settings, component: renderSettingsTab },
+    { id: 'todo', name: 'DO', icon: CheckCircle, component: renderTodoTab },
+    { id: 'thoughts', name: 'THINK', icon: Lightbulb, component: renderThoughtsTab },
+    { id: 'diary', name: 'RECORD', icon: Book, component: renderDiaryTab },
+    { id: 'stats', name: 'STATS', icon: BarChart3, component: renderStatsTab },
+    // { id: 'weekly-report', name: '주간회고', icon: BookOpen, component: renderWeeklyReportTab },
+    // { id: 'settings', name: '설정', icon: Settings, component: renderSettingsTab },
   ];
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || renderTodoTab;
@@ -536,41 +537,44 @@ const SelfDevelopmentTracker = () => {
         {/* 간단한 날짜 선택 (특정 탭에서만 표시) */}
         {!['stats', 'weekly-report'].includes(activeTab) && (
           <div className="mb-6">
-            <div className="flex items-center justify-center gap-3 max-w-md mx-auto">
-              <button
-                onClick={goToPreviousDay}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                title="이전 날짜"
-              >
-                <ChevronLeft className="h-5 w-5 text-black" />
-              </button>
-              
-              <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border shadow-sm">
-                {dateInfo.isToday && (
-                  <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full">오늘</span>
-                )}
-                <input
-                  type="date"
-                  value={currentDate}
-                  onChange={(e) => setCurrentDate(e.target.value)}
-                  className="text-sm font-medium text-black bg-transparent border-none outline-none cursor-pointer"
-                />
+            <div className="flex flex-col items-center gap-3 max-w-md mx-auto">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={goToPreviousDay}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="이전 날짜"
+                >
+                  <ChevronLeft className="h-5 w-5 text-black" />
+                </button>
+                
+                <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-xl border shadow-sm">
+                  {dateInfo.isToday && (
+                    <span className="text-xs bg-blue-500 text-white px-2 py-1 rounded-full">오늘</span>
+                  )}
+                  <input
+                    type="date"
+                    value={currentDate}
+                    onChange={(e) => setCurrentDate(e.target.value)}
+                    className="text-sm font-medium text-black bg-transparent border-none outline-none cursor-pointer"
+                  />
+                </div>
+                
+                <button
+                  onClick={goToNextDay}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  title="다음 날짜"
+                >
+                  <ChevronRight className="h-5 w-5 text-black" />
+                </button>
               </div>
               
-              <button
-                onClick={goToNextDay}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                title="다음 날짜"
-              >
-                <ChevronRight className="h-5 w-5 text-black" />
-              </button>
             </div>
           </div>
         )}
 
-        {/* 탭 네비게이션 - 3개씩 배치 */}
+        {/* 탭 네비게이션 - 4개 배치 */}
         <div className="mb-8">
-          <div className="grid grid-cols-3 gap-2 lg:gap-3 max-w-2xl mx-auto">
+          <div className="grid grid-cols-4 gap-2 lg:gap-3 max-w-2xl mx-auto">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -580,7 +584,7 @@ const SelfDevelopmentTracker = () => {
                     setActiveTab(tab.id);
                     router.push(`/?tab=${tab.id}`, { scroll: false });
                   }}
-                  className={`flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-1 sm:gap-2 px-2 sm:px-3 py-2 sm:py-3 lg:px-4 lg:py-3 rounded-xl font-medium transition-all duration-200 text-xs sm:text-sm lg:text-base ${
+                  className={`flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-3 py-2 sm:py-3 lg:px-4 lg:py-3 rounded-xl font-medium transition-all duration-200 text-xs sm:text-sm lg:text-base ${
                     activeTab === tab.id
                       ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg transform scale-105'
                       : 'bg-white text-black hover:bg-gray-100 shadow-sm hover:shadow-md hover:scale-105'
