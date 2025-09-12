@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Coffee, Lightbulb, Plus, X } from 'lucide-react';
+import { Lightbulb, Plus, X } from 'lucide-react';
 import { DayData, Thought } from '../../shared/types/types';
 
 interface ThoughtsTabProps {
@@ -13,174 +13,102 @@ const ThoughtsTab: React.FC<ThoughtsTabProps> = ({
   updateCurrentDayData,
   showWarning
 }) => {
-  const [newMorningThought, setNewMorningThought] = useState('');
-  const [newDailyIdea, setNewDailyIdea] = useState('');
-  
-  const morningThoughtInputRef = useRef<HTMLInputElement>(null);
-  const dailyIdeaInputRef = useRef<HTMLInputElement>(null);
+  const [newThought, setNewThought] = useState('');
+  const thoughtInputRef = useRef<HTMLInputElement>(null);
 
-  const addMorningThought = () => {
-    if (newMorningThought.trim()) {
-      // 아침 생각 3개 제한 체크
+  const addThought = () => {
+    if (newThought.trim()) {
+      // 오늘의 생각&배운점 3개 제한 체크
       const morningThoughts = (dayData.thoughts || []).filter(thought => thought.type === 'morning');
       if (morningThoughts.length >= 3) {
-        showWarning('아침 생각은 하루에 최대 3개까지만 추가할 수 있습니다.');
+        showWarning('오늘의 생각&배운점은 하루에 3개까지만 작성할 수 있습니다.');
         return;
       }
       
-      const newThought: Thought = {
+      const newThoughtItem: Thought = {
         id: Date.now(),
-        text: newMorningThought.trim(),
+        text: newThought.trim(),
         type: 'morning',
         date: new Date().toISOString().split('T')[0]
       };
       updateCurrentDayData({
-        thoughts: [...(dayData.thoughts || []), newThought]
+        thoughts: [...(dayData.thoughts || []), newThoughtItem]
       });
-      setNewMorningThought('');
+      setNewThought('');
       
-      // 포커스 유지를 위해 더 긴 지연 후 다시 포커스 설정
       setTimeout(() => {
-        if (morningThoughtInputRef.current) {
-          morningThoughtInputRef.current.focus();
-          morningThoughtInputRef.current.setSelectionRange(0, 0);
+        if (thoughtInputRef.current) {
+          thoughtInputRef.current.focus();
+          thoughtInputRef.current.setSelectionRange(0, 0);
         }
       }, 200);
     }
   };
 
-  const removeMorningThought = (id: number) => {
+  const removeThought = (id: number) => {
     updateCurrentDayData({
       thoughts: (dayData.thoughts || []).filter(thought => thought.id && thought.id !== id)
     });
   };
 
-  const addDailyIdea = () => {
-    if (newDailyIdea.trim()) {
-      // 하루 생각 3개 제한 체크
-      const dailyIdeas = (dayData.thoughts || []).filter(thought => thought.type === 'idea');
-      if (dailyIdeas.length >= 3) {
-        showWarning('하루 생각은 하루에 최대 3개까지만 추가할 수 있습니다.');
-        return;
-      }
-      
-      const newIdea: Thought = {
-        id: Date.now(),
-        text: newDailyIdea.trim(),
-        type: 'idea',
-        date: new Date().toISOString().split('T')[0]
-      };
-      updateCurrentDayData({
-        thoughts: [...(dayData.thoughts || []), newIdea]
-      });
-      setNewDailyIdea('');
-      
-      // 포커스 유지를 위해 더 긴 지연 후 다시 포커스 설정
-      setTimeout(() => {
-        if (dailyIdeaInputRef.current) {
-          dailyIdeaInputRef.current.focus();
-          dailyIdeaInputRef.current.setSelectionRange(0, 0);
-        }
-      }, 200);
-    }
-  };
-
-  const removeDailyIdea = (id: number) => {
-    updateCurrentDayData({
-      thoughts: (dayData.thoughts || []).filter(thought => thought.id && thought.id !== id)
-    });
-  };
+  const morningThoughts = (dayData.thoughts || []).filter(thought => thought.type === 'morning' && thought.id);
 
   return (
     <div className="space-y-2 lg:space-y-4">
-      <div className="bg-white p-8 lg:p-10 rounded-2xl border">
-        <h3 className="text-xl lg:text-2xl font-semibold mb-6 flex items-center">
-          <Coffee className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-amber-600" />
-          아침 생각
-        </h3>
-       
+      {/* 오늘의 생각&배운점 섹션 */}
+      <div className="bg-white p-6 lg:p-8 rounded-2xl border">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-xl lg:text-2xl font-semibold flex items-center">
+            <Lightbulb className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-orange-500" />
+            생각 & 배운점
+          </h3>
+        </div>
+        
+        {/* 새 생각 추가 폼 */}
         <div className="mb-6">
-          <div className="flex gap-2">
+          <div className="flex gap-3 lg:gap-4">
             <input
-              ref={morningThoughtInputRef}
+              ref={thoughtInputRef}
               type="text"
-              value={newMorningThought}
-              onChange={(e) => setNewMorningThought(e.target.value)}
-              placeholder="새로운 아침 생각을 입력하세요"
-              className="flex-1 p-3 lg:p-4 border rounded-xl focus:ring-2 focus:ring-amber-500 text-lg lg:text-xl"
-              onKeyPress={(e) => e.key === 'Enter' && addMorningThought()}
+              value={newThought}
+              onChange={(e) => setNewThought(e.target.value)}
+              placeholder="오늘의 생각이나 배운 점을 적어보세요"
+              className="flex-1 p-4 lg:p-5 border rounded-xl focus:ring-2 focus:ring-orange-500 text-lg lg:text-xl"
+              onKeyPress={(e) => e.key === 'Enter' && addThought()}
             />
             <button
-              onClick={addMorningThought}
-              className="px-4 lg:px-6 py-3 lg:py-4 bg-amber-500 text-white rounded-xl hover:bg-amber-600 flex items-center"
+              onClick={addThought}
+              className="px-6 lg:px-8 py-4 lg:py-5 bg-orange-500 text-white rounded-xl hover:bg-orange-600 flex items-center text-lg lg:text-xl"
             >
-              <Plus className="h-5 w-5" />
+              <Plus className="h-5 w-5 lg:h-6 lg:w-6" />
             </button>
           </div>
         </div>
 
-        <div className="space-y-3">
-          {(dayData.thoughts || []).filter(thought => thought.type === 'morning' && thought.id).map((thought) => (
-            <div key={thought.id} className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-200">
-              <div className="flex-1">
-                <p className="text-lg lg:text-xl text-gray-800">{thought.text}</p>
-              </div>
-              <button
-                onClick={() => removeMorningThought(thought.id!)}
-                className="text-red-500 hover:text-red-700 p-1"
-              >
-                <X className="h-5 w-5" />
-              </button>
+        {/* 생각 리스트 */}
+        <div className="space-y-3 lg:space-y-4">
+          {morningThoughts.length === 0 ? (
+            <div className="text-center py-12 lg:py-16 text-gray-500">
+              <Lightbulb className="h-16 w-16 lg:h-20 lg:w-20 mx-auto mb-4 text-gray-300" />
+              <p className="text-lg lg:text-xl">아직 생각이나 배운 점이 없습니다. 오늘의 인사이트를 기록해보세요!</p>
             </div>
-          ))}
-          {(dayData.thoughts || []).filter(thought => thought.type === 'morning' && thought.id).length === 0 && (
-            <p className="text-gray-500 text-center py-4">아직 아침 생각이 없습니다. 위에서 추가해보세요!</p>
-          )}
-        </div>
-      </div>
-
-      <div className="bg-white p-8 lg:p-10 rounded-2xl border">
-        <h3 className="text-xl lg:text-2xl font-semibold mb-6 flex items-center">
-          <Lightbulb className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-yellow-600" />
-          하루 생각
-        </h3>
-       
-        <div className="mb-6">
-          <div className="flex gap-2">
-            <input
-              ref={dailyIdeaInputRef}
-              type="text"
-              value={newDailyIdea}
-              onChange={(e) => setNewDailyIdea(e.target.value)}
-              placeholder="새로운 아이디어를 입력하세요"
-              className="flex-1 p-3 lg:p-4 border rounded-xl focus:ring-2 focus:ring-yellow-500 text-lg lg:text-xl"
-              onKeyPress={(e) => e.key === 'Enter' && addDailyIdea()}
-            />
-            <button
-              onClick={addDailyIdea}
-              className="px-4 lg:px-6 py-3 lg:py-4 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 flex items-center"
-            >
-              <Plus className="h-5 w-5" />
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          {(dayData.thoughts || []).filter(thought => thought.type === 'idea' && thought.id).map((idea) => (
-            <div key={idea.id} className="flex items-start gap-3 p-4 bg-green-50 rounded-xl border border-green-200">
-              <div className="flex-1">
-                <p className="text-lg lg:text-xl text-gray-800">{idea.text}</p>
+          ) : (
+            morningThoughts.map((thought, index) => (
+              <div key={thought.id} className="flex items-center gap-4 p-4 lg:p-6 rounded-xl border bg-orange-50 border-orange-200">
+                <div className="flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 bg-orange-500 text-white rounded-full text-sm lg:text-base font-bold">
+                  {index + 1}
+                </div>
+                <div className="flex-1">
+                  <p className="text-lg lg:text-xl text-gray-800">{thought.text}</p>
+                </div>
+                <button
+                  onClick={() => removeThought(thought.id!)}
+                  className="p-2 text-red-500 hover:bg-red-100 rounded-lg transition-colors"
+                >
+                  <X className="h-5 w-5 lg:h-6 lg:w-6" />
+                </button>
               </div>
-              <button
-                onClick={() => removeDailyIdea(idea.id!)}
-                className="text-red-500 hover:text-red-700 p-1"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-          ))}
-          {(dayData.thoughts || []).filter(thought => thought.type === 'idea' && thought.id).length === 0 && (
-            <p className="text-gray-500 text-center py-4">아직 아이디어가 없습니다. 위에서 추가해보세요!</p>
+            ))
           )}
         </div>
       </div>

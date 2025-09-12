@@ -4,9 +4,7 @@ export interface Todo {
   text: string;
   completed: boolean;
   priority: 'high' | 'medium' | 'low';
-  order_index: number; // Supabase 필드 (primary)
-  order?: number; // 호환성을 위한 필드 (order_index와 동일한 값)
-  type?: 'todo' | 'habit' | 'goal' | 'reminder';
+  order_index: number;
   link?: string;
   description?: string;
   created_at: string;
@@ -14,33 +12,27 @@ export interface Todo {
 }
 
 export interface Thought {
-  id?: number; // 선택적으로 변경
+  id?: number;
   text: string;
-  type?: 'morning' | 'daily' | 'idea';
+  type: 'morning'; // 3-3-3 구조에서는 morning만 사용
   date: string;
-  // timestamp 필드 제거 - Supabase에서 created_at, updated_at 사용
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface DailyReport {
   date: string;
-  summary: string;
-  gratitude: string;
-  lessons_learned: string;
-  tomorrow_goals: string;
-  mood: '매우좋음' | '좋음' | '보통' | '나쁨' | '매우나쁨'; // mood 값 수정
-  created_at: string;
-  updated_at: string;
+  summary: string; // 오늘 한줄
+  gratitude: string; // 감사일기
+  tomorrow_goals: string; // 내일 집중
+  mood: '매우좋음' | '좋음' | '보통' | '나쁨' | '매우나쁨';
+  created_at?: string;
+  updated_at?: string;
 }
 
-export interface Diary {
-  daily_report_id: number;
-  content: string;
-  category: string; // 추가
-  created_at: string;
-  updated_at: string;
-}
+// Diary 인터페이스 제거 - DailyReport로 대체됨
 
-// 기존 호환성을 위한 타입들
+// 레거시 타입들 - 호환성을 위해 유지
 export interface CompletedItem {
   id: number;
   text: string;
@@ -61,13 +53,12 @@ export interface MustDoItem {
   order: number;
 }
 
-// 새로운 구조의 DayData (legacy 필드들과 호환성 유지)
+// 3-3-3 구조에 맞는 DayData
 export interface DayData {
-  todos: Todo[];
-  thoughts: Thought[];
-  dailyReport: DailyReport;
-  diary: Diary[];
-  completedItems?: CompletedItem[]; // 기존 호환성을 위한 필드
+  todos: Todo[]; // DO: 최대 3개
+  thoughts: Thought[]; // THINK: 최대 3개 (morning 타입만)
+  dailyReport: DailyReport; // RECORD: 3개 필드 (summary, gratitude, tomorrow_goals)
+  completedItems?: CompletedItem[]; // 호환성을 위한 필드
 }
 
 export interface Data {
@@ -86,30 +77,6 @@ export interface MoodData {
   todos: number;
 }
 
-export interface WeeklyReport {
-  id?: number;
-  week_start_date: string;
-  week_end_date: string;
-  what_went_well: string;
-  what_didnt_go_well: string;
-  what_learned: string;
-  next_week_goals: string;
-  weekly_summary: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface WeeklyStats {
-  id?: number;
-  week_start_date: string;
-  week_end_date: string;
-  completed_tasks: number;
-  total_tasks: number;
-  mood_average: number;
-  thoughts_count: number;
-  total_diary_entries: number;
-  daily_reports_written: number;
-  completion_rate?: number;
-  created_at: string;
-  updated_at: string;
-} 
+// 주간 보고서 및 통계 인터페이스 제거 - 3-3-3 구조에서 불필요
+// export interface WeeklyReport { ... }
+// export interface WeeklyStats { ... } 

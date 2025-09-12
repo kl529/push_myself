@@ -364,7 +364,7 @@ const SortableTodoItem: React.FC<{
           </div>
         ) : (
           <div 
-            className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 p-2 rounded-lg transition-colors"
+            className="flex items-center gap-3 cursor-pointer p-2 rounded-lg"
             onClick={() => onOpenModal(todo)}
           >
             <div className="flex-1">
@@ -390,26 +390,16 @@ const SortableTodoItem: React.FC<{
       </div>
 
       {/* 액션 버튼 */}
-      <div className="flex gap-2">
-        {todo.completed ? (
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggle(todo.id);
-            }}
-            className="px-3 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600"
-          >
-            되돌리기
-          </button>
-        ) : (
+      {!todo.completed && (
+        <div className="flex gap-2">
           <button
             onClick={() => onDelete(todo.id)}
             className="p-2 text-red-500 hover:bg-red-100 rounded-lg"
           >
             <Trash2 className="h-5 w-5" />
           </button>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -466,10 +456,10 @@ const TodoTab: React.FC<TodoTabProps> = ({
 
   const handleAddTodo = () => {
     if (newTodo.trim()) {
-      // 하루 3개 제한 체크
+      // 하루 3개 제한 체크 (기존 로직 유지하되 경고 메시지 변경)
       const incompleteTodos = dayData.todos.filter(todo => !todo.completed);
       if (incompleteTodos.length >= 3) {
-        showWarning('하루에 최대 3개의 할 일만 추가할 수 있습니다.');
+        showWarning('매일 1% 성장을 위해 3개의 핵심 업무에만 집중하세요!');
         return;
       }
       
@@ -536,26 +526,21 @@ const TodoTab: React.FC<TodoTabProps> = ({
     const { active, over } = event;
 
     if (active.id !== over?.id) {
-      const oldIndex = sortedTodos.findIndex(todo => todo.id === active.id);
-      const newIndex = sortedTodos.findIndex(todo => todo.id === over?.id);
+      const oldIndex = allTodos.findIndex(todo => todo.id === active.id);
+      const newIndex = allTodos.findIndex(todo => todo.id === over?.id);
       reorderTodos(oldIndex, newIndex);
     }
   };
 
-  // 미완료 투두만 필터링하여 우선순위 순으로 정렬
-  const sortedTodos = [...dayData.todos]
-    .filter(todo => !todo.completed)
+  // 모든 투두들을 우선순위와 완료 상태에 따라 정렬 (미완료가 먼저)
+  const allTodos = [...dayData.todos]
     .sort((a, b) => {
-      const priorityOrder = { high: 3, medium: 2, low: 1 };
-      const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
-      if (priorityDiff !== 0) return priorityDiff;
-      return a.order_index - b.order_index;
-    });
-
-  // 완료된 투두들 (우선순위 순으로 정렬)
-  const completedTodos = dayData.todos
-    .filter(todo => todo.completed)
-    .sort((a, b) => {
+      // 미완료 항목이 먼저 오도록
+      if (a.completed !== b.completed) {
+        return a.completed ? 1 : -1;
+      }
+      
+      // 같은 완료 상태내에서는 우선순위 순으로
       const priorityOrder = { high: 3, medium: 2, low: 1 };
       const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority];
       if (priorityDiff !== 0) return priorityDiff;
@@ -602,10 +587,12 @@ const TodoTab: React.FC<TodoTabProps> = ({
       
       {/* TO DO 섹션 */}
       <div className="bg-white p-4 lg:p-6 rounded-2xl border">
-        <h3 className="text-xl lg:text-2xl font-semibold mb-6 flex items-center">
-          <CheckCircle className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-blue-600" />
-          TO DO
-        </h3>
+        <div className="mb-6">
+          <h3 className="text-xl lg:text-2xl font-semibold flex items-center">
+            <CheckCircle className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-blue-600" />
+            꼭 해야할 일
+          </h3>
+        </div>
         
         {/* 새 투두 추가 폼 */}
         <div className="mb-6 space-y-4">
@@ -615,7 +602,7 @@ const TodoTab: React.FC<TodoTabProps> = ({
               type="text"
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
-              placeholder="새로운 할 일을 입력하세요"
+              placeholder="오늘의 핵심 업무를 입력하세요"
               className="flex-1 p-4 lg:p-5 border rounded-xl focus:ring-2 focus:ring-blue-500 text-lg lg:text-xl"
               onKeyPress={(e) => e.key === 'Enter' && handleAddTodo()}
             />
@@ -637,12 +624,12 @@ const TodoTab: React.FC<TodoTabProps> = ({
           </div>
         </div>
         
-        {/* 미완료 투두 목록 */}
+        {/* 루두 목록 (완료/미완료 통합) */}
         <div className="space-y-3 lg:space-y-4">
-          {sortedTodos.length === 0 ? (
+          {allTodos.length === 0 ? (
             <div className="text-center py-12 lg:py-16 text-gray-500">
               <CheckCircle className="h-16 w-16 lg:h-20 lg:w-20 mx-auto mb-4 text-gray-300" />
-              <p className="text-lg lg:text-xl">아직 할 일이 없습니다. 새로운 할 일을 추가해보세요!</p>
+              <p className="text-lg lg:text-xl">아직 핵심 업무가 없습니다. 오늘의 3가지 목표를 설정해보세요!</p>
             </div>
           ) : (
             <DndContext
@@ -651,10 +638,10 @@ const TodoTab: React.FC<TodoTabProps> = ({
               onDragEnd={handleDragEnd}
             >
               <SortableContext
-                items={sortedTodos.map(todo => todo.id)}
+                items={allTodos.map(todo => todo.id)}
                 strategy={verticalListSortingStrategy}
               >
-                {sortedTodos.map((todo: Todo) => (
+                {allTodos.map((todo: Todo) => (
                   <SortableTodoItem
                     key={todo.id}
                     todo={todo}
@@ -677,55 +664,6 @@ const TodoTab: React.FC<TodoTabProps> = ({
           )}
         </div>
       </div>
-
-      {/* 완료된 작업 섹션 */}
-      {completedTodos.length > 0 && (
-        <div className="bg-white p-4 lg:p-6 rounded-2xl border">
-          <h3 className="text-xl lg:text-2xl font-semibold mb-6 flex items-center">
-            <CheckCircle className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-green-600" />
-            COMPLETED
-          </h3>
-          
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={(event) => {
-              const { active, over } = event;
-              if (active.id !== over?.id) {
-                const oldIndex = completedTodos.findIndex(todo => todo.id === active.id);
-                const newIndex = completedTodos.findIndex(todo => todo.id === over?.id);
-                reorderTodos(oldIndex, newIndex);
-              }
-            }}
-          >
-            <SortableContext
-              items={completedTodos.map(todo => todo.id)}
-              strategy={verticalListSortingStrategy}
-            >
-              <div className="space-y-3 lg:space-y-4">
-                {completedTodos.map((todo: Todo) => (
-                  <SortableTodoItem
-                    key={todo.id}
-                    todo={todo}
-                    editingTodo={editingTodo}
-                    editText={editText}
-                    editPriority={editPriority}
-                    priorityColors={priorityColors}
-                    priorityLabels={priorityLabels}
-                    onToggle={toggleTodo}
-                    onSaveEdit={handleSaveEdit}
-                    onCancelEdit={handleCancelEdit}
-                    onDelete={deleteTodo}
-                    onEditTextChange={setEditText}
-                    onEditPriorityChange={setEditPriority}
-                    onOpenModal={handleOpenCompletedModal}
-                  />
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
-        </div>
-      )}
 
       {/* 모달 */}
       <TodoModal
