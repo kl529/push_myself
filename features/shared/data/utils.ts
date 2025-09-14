@@ -1,4 +1,4 @@
-import { DayData, Data, Stats, MoodData, MustDoItem } from '../types/types';
+import { DayData, Data, Stats, MoodData } from '../types/types';
 
 // 데이터 구조 초기화
 export const initializeData = (): DayData => ({
@@ -8,7 +8,6 @@ export const initializeData = (): DayData => ({
     date: new Date().toISOString().split('T')[0],
     summary: '',
     gratitude: '',
-    lessons_learned: '',
     tomorrow_goals: '',
     mood: '보통',
     created_at: new Date().toISOString(),

@@ -5,28 +5,32 @@
 ## 📋 프로젝트 개요
 
 ### 🎯 목적
-Push Myself는 **3-3-3 시스템** 기반의 개인 성장 추적 PWA입니다.
-- **DO**: 매일 3개 핵심 업무
-- **THINK**: 매일 3개 생각&배운점  
+Push Myself는 **3-3-3 시스템** 기반의 체계적인 자기계발 PWA입니다.
+- **DO**: 매일 3개 핵심 할일 (우선순위별 관리)
+- **THINK**: 매일 3개 생각&배운점 (성찰과 학습)
 - **RECORD**: 3가지 핵심 기록 (오늘 한줄, 감사일기, 내일 집중)
 
 ### 🏗️ 기술 스택
-- **Frontend**: Next.js 15.4.5, TypeScript, Tailwind CSS
-- **Backend**: Supabase (PostgreSQL), localStorage (폴백)
-- **PWA**: next-pwa, Service Worker
+- **Frontend**: Next.js 15.4.5 (App Router), TypeScript, Tailwind CSS
+- **Backend**: Supabase (PostgreSQL + RLS + Auth), localStorage (폴백)
+- **Authentication**: Google OAuth 2.0 (PKCE flow)
+- **PWA**: Service Worker, Web App Manifest
 - **UI**: Lucide React, @dnd-kit (드래그앤드롭)
+- **Deployment**: Vercel (HTTPS 필수)
 
 ### 🗂️ 아키텍처
 ```
 /features          # 기능별 모듈화
-  /shared          # 공통 타입, 서비스
+  /auth            # 인증 (Google OAuth, Context)
+  /shared          # 공통 타입, 서비스, 컴포넌트
   /dashboard       # 자기암시, 명언
   /todos           # DO 탭 (할일 관리)
-  /thoughts        # THINK 탭 (생각&배운점)  
+  /thoughts        # THINK 탭 (생각&배운점)
   /diary           # RECORD 탭 (일일 기록)
   /stats           # STATS 탭 (성장 시각화)
-/components        # 공통 컴포넌트
-/lib              # 유틸리티, 서비스
+/components        # 공통 UI 컴포넌트
+/app              # Next.js 15 App Router
+/public           # 정적 파일 (PWA 매니페스트, 아이콘)
 ```
 
 ## 🎨 개발 가이드라인
@@ -66,7 +70,7 @@ todo_schema.sql     # 스키마 파일 (snake_case)
 
 ### Development Commands
 ```bash
-npm run dev          # Start development server
+npm run dev          # Start development server (포트 3000/3002)
 npm run build        # Build for production
 npm start           # Start production server
 npm run lint        # Run ESLint
@@ -117,6 +121,8 @@ interface Todo {
 2. **morning 타입만**: thoughts는 'morning' 타입만 사용
 3. **즉시 저장**: 모든 입력은 실시간으로 저장
 4. **날짜 기반**: 모든 데이터는 날짜(YYYY-MM-DD)로 구분
+5. **인증 보안**: PKCE flow 사용, 토큰 URL 노출 방지
+6. **RLS 정책**: 사용자별 데이터 격리 (Supabase)
 
 ### 🔄 상태 관리 패턴
 ```typescript
@@ -132,8 +138,10 @@ currentDayData.todos.push(newTodo); // 이렇게 하지 마세요!
 
 ### 📱 PWA 고려사항
 - 오프라인 동작 지원 필수
-- localStorage 폴백 구현
-- Service Worker 등록 확인
+- localStorage 폴백 구현 (Supabase 연결 실패 시)
+- Service Worker 자동 등록 (app/layout.tsx)
+- HTTPS 배포 필수 (PWA 설치용)
+- 반응형 디자인 (모바일 우선)
 
 ## 🔧 자주 사용하는 패턴
 

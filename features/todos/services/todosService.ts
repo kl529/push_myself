@@ -1,5 +1,6 @@
 import { supabase, isSupabaseAvailable } from '../../shared/services/supabase';
 import { Todo } from '../../shared/types/types';
+import { getCurrentUser } from '../../auth/services/authService';
 
 // 투두 추가 (Supabase + 로컬스토리지 백업)
 export const addTodo = async (date: string, todo: Omit<Todo, 'id' | 'created_at' | 'updated_at'>): Promise<Todo | null> => {
@@ -10,11 +11,20 @@ export const addTodo = async (date: string, todo: Omit<Todo, 'id' | 'created_at'
   }
 
   try {
+    // 사용자 인증 확인
+    const { user, error: authError } = await getCurrentUser();
+    if (authError || !user) {
+      console.log('사용자가 인증되지 않았습니다. 로컬스토리지에 저장합니다.');
+      const newTodo = addTodoToLocalStorage(date, todo);
+      return newTodo;
+    }
+
     // 해당 날짜의 최대 order_index를 가져와서 +1로 설정
     const { data: existingTodos, error: fetchError } = await supabase!
       .from('todos')
       .select('order_index')
       .eq('date', date)
+      .eq('user_id', user.id)
       .order('order_index', { ascending: false })
       .limit(1);
 
@@ -24,11 +34,11 @@ export const addTodo = async (date: string, todo: Omit<Todo, 'id' | 'created_at'
     }
 
     const todoToInsert = {
+      user_id: user.id,
       text: todo.text,
       completed: todo.completed || false,
       priority: todo.priority || 'medium',
       order_index: nextOrderIndex,
-      type: todo.type || 'todo',
       link: todo.link || null,
       description: todo.description || null,
       date,
@@ -64,8 +74,8 @@ export const updateTodo = async (id: number, updates: Partial<Todo>): Promise<vo
 
   try {
     const supabaseUpdates: Partial<Todo> & { updated_at: string; order_index?: number } = { ...updates, updated_at: new Date().toISOString() };
-    if (updates.order !== undefined) {
-      supabaseUpdates.order_index = updates.order;
+    if (updates.order_index !== undefined) {
+      supabaseUpdates.order_index = updates.order_index;
     }
 
     const { error } = await supabase!.from('todos')
@@ -105,7 +115,6 @@ export const reorderTodos = async (date: string, todos: Todo[]): Promise<void> =
         completed: todo.completed || false,
         priority: todo.priority || 'medium',
         order_index: index,
-        type: todo.type || 'todo',
         link: todo.link || null,
         description: todo.description || null,
         date,
@@ -168,7 +177,6 @@ export const updateTodosInSupabase = async (date: string, todos: Todo[]): Promis
         completed: todo.completed || false,
         priority: todo.priority || 'medium',
         order_index: index, // 순서대로 0, 1, 2, ... 할당
-        type: todo.type || 'todo',
         link: todo.link || null,
         description: todo.description || null,
         date,

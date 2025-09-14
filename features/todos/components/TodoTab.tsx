@@ -548,88 +548,91 @@ const TodoTab: React.FC<TodoTabProps> = ({
     });
 
   return (
-    <div className="space-y-2 lg:space-y-4">
-      {/* 자기암시 섹션 */}
-      <div className="bg-white p-4 lg:p-6 rounded-2xl border">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl lg:text-2xl font-semibold flex items-center">
-            <Star className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-purple-600" />
+    <div className="space-y-3 lg:space-y-4 p-2 sm:p-0">
+      {/* 자기암시 섹션 - 모바일 최적화 */}
+      <div className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl lg:rounded-2xl border">
+        <div className="flex items-center justify-between mb-3 lg:mb-4">
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold flex items-center">
+            <Star className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 mr-2 sm:mr-3 text-purple-600" />
             자기암시
           </h3>
           <button
             onClick={() => setIsAffirmationModalOpen(true)}
-            className="p-2 lg:p-3 bg-purple-100 hover:bg-purple-200 rounded-xl transition-colors"
+            className="p-2 lg:p-3 bg-purple-100 hover:bg-purple-200 rounded-lg lg:rounded-xl transition-colors touch-manipulation"
             title="자기암시 설정"
           >
-            <Settings className="h-5 w-5 lg:h-6 lg:w-6 text-purple-600" />
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6 text-purple-600" />
           </button>
         </div>
-        
+
         {currentAffirmation ? (
-          <div className="bg-purple-50 p-4 lg:p-6 rounded-xl border border-purple-200">
-            <p className="text-lg lg:text-xl text-purple-800 italic leading-relaxed whitespace-pre-wrap">
+          <div className="bg-purple-50 p-3 sm:p-4 lg:p-6 rounded-lg lg:rounded-xl border border-purple-200">
+            <p className="text-sm sm:text-base lg:text-lg xl:text-xl text-purple-800 italic leading-relaxed whitespace-pre-wrap">
               {currentAffirmation}
             </p>
           </div>
         ) : (
-          <div className="text-center py-6 lg:py-8 text-gray-500">
-            <Star className="h-12 w-12 lg:h-14 lg:w-14 mx-auto mb-3 text-gray-300" />
-            <p className="text-base lg:text-lg mb-3">아직 자기암시가 설정되지 않았습니다</p>
+          <div className="text-center py-4 sm:py-6 lg:py-8 text-gray-500">
+            <Star className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 mx-auto mb-3 text-gray-300" />
+            <p className="text-sm sm:text-base lg:text-lg mb-3">아직 자기암시가 설정되지 않았습니다</p>
             <button
               onClick={() => setIsAffirmationModalOpen(true)}
-              className="px-4 py-2 bg-purple-500 text-white rounded-xl hover:bg-purple-600 font-medium text-sm lg:text-base"
+              className="px-4 py-2 bg-purple-500 text-white rounded-lg lg:rounded-xl hover:bg-purple-600 font-medium text-sm lg:text-base touch-manipulation"
             >
               자기암시 설정하기
             </button>
           </div>
         )}
       </div>
-      
-      {/* TO DO 섹션 */}
-      <div className="bg-white p-4 lg:p-6 rounded-2xl border">
-        <div className="mb-6">
-          <h3 className="text-xl lg:text-2xl font-semibold flex items-center">
-            <CheckCircle className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-blue-600" />
-            꼭 해야할 일
+
+      {/* TO DO 섹션 - 모바일 최적화 */}
+      <div className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl lg:rounded-2xl border">
+        <div className="mb-4 lg:mb-6">
+          <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold flex items-center">
+            <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 lg:h-8 lg:w-8 mr-2 sm:mr-3 text-blue-600" />
+            <span>꼭 해야할 일</span>
           </h3>
         </div>
         
-        {/* 새 투두 추가 폼 */}
-        <div className="mb-6 space-y-4">
-          <div className="flex gap-3 lg:gap-4">
+        {/* 새 투두 추가 폼 - 모바일 최적화 */}
+        <div className="mb-4 lg:mb-6 space-y-3 lg:space-y-4">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 lg:gap-4">
             <input
               ref={newTodoInputRef}
               type="text"
               value={newTodo}
               onChange={(e) => setNewTodo(e.target.value)}
               placeholder="오늘의 핵심 업무를 입력하세요"
-              className="flex-1 p-4 lg:p-5 border rounded-xl focus:ring-2 focus:ring-blue-500 text-lg lg:text-xl"
+              className="flex-1 p-3 sm:p-4 lg:p-5 border rounded-lg lg:rounded-xl focus:ring-2 focus:ring-blue-500 text-sm sm:text-base lg:text-lg xl:text-xl"
               onKeyPress={(e) => e.key === 'Enter' && handleAddTodo()}
             />
-            <select
-              value={newTodoPriority}
-              onChange={(e) => setNewTodoPriority(e.target.value as 'high' | 'medium' | 'low')}
-              className="px-4 lg:px-6 py-4 lg:py-5 border rounded-xl focus:ring-2 focus:ring-blue-500 text-lg lg:text-xl bg-white"
-            >
-              <option value="high">높음</option>
-              <option value="medium">보통</option>
-              <option value="low">낮음</option>
-            </select>
-            <button
-              onClick={handleAddTodo}
-              className="px-6 lg:px-8 py-4 lg:py-5 bg-blue-500 text-white rounded-xl hover:bg-blue-600 flex items-center text-lg lg:text-xl"
-            >
-              <Plus className="h-5 w-5 lg:h-6 lg:w-6" />
-            </button>
+            <div className="flex gap-2 sm:gap-3">
+              <select
+                value={newTodoPriority}
+                onChange={(e) => setNewTodoPriority(e.target.value as 'high' | 'medium' | 'low')}
+                className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 lg:py-5 border rounded-lg lg:rounded-xl focus:ring-2 focus:ring-blue-500 text-sm sm:text-base lg:text-lg xl:text-xl bg-white min-w-0 flex-1 sm:flex-none"
+              >
+                <option value="high">높음</option>
+                <option value="medium">보통</option>
+                <option value="low">낮음</option>
+              </select>
+              <button
+                onClick={handleAddTodo}
+                className="px-4 sm:px-6 lg:px-8 py-3 sm:py-4 lg:py-5 bg-blue-500 text-white rounded-lg lg:rounded-xl hover:bg-blue-600 active:bg-blue-700 flex items-center justify-center text-sm sm:text-base lg:text-lg xl:text-xl touch-manipulation"
+              >
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5 lg:h-6 lg:w-6" />
+                <span className="hidden sm:inline ml-1 lg:ml-2">추가</span>
+              </button>
+            </div>
           </div>
         </div>
-        
-        {/* 루두 목록 (완료/미완료 통합) */}
-        <div className="space-y-3 lg:space-y-4">
+
+        {/* 투두 목록 (완료/미완료 통합) - 모바일 최적화 */}
+        <div className="space-y-2 sm:space-y-3 lg:space-y-4">
           {allTodos.length === 0 ? (
-            <div className="text-center py-12 lg:py-16 text-gray-500">
-              <CheckCircle className="h-16 w-16 lg:h-20 lg:w-20 mx-auto mb-4 text-gray-300" />
-              <p className="text-lg lg:text-xl">아직 핵심 업무가 없습니다. 오늘의 3가지 목표를 설정해보세요!</p>
+            <div className="text-center py-8 sm:py-12 lg:py-16 text-gray-500">
+              <CheckCircle className="h-12 w-12 sm:h-16 sm:w-16 lg:h-20 lg:w-20 mx-auto mb-3 lg:mb-4 text-gray-300" />
+              <p className="text-sm sm:text-base lg:text-lg xl:text-xl px-4">아직 핵심 업무가 없습니다. 오늘의 3가지 목표를 설정해보세요!</p>
             </div>
           ) : (
             <DndContext

@@ -32,7 +32,9 @@ const createSupabaseClient = (): SupabaseClient | null => {
     const client = createClient(url, key, {
       auth: {
         autoRefreshToken: true,
-        persistSession: false, // PWA에서 세션 지속성 문제 방지
+        persistSession: true, // Google OAuth를 위해 세션 지속성 활성화
+        detectSessionInUrl: true,
+        storage: typeof window !== 'undefined' ? window.localStorage : undefined
       },
       realtime: {
         params: {
