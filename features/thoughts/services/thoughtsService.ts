@@ -1,5 +1,6 @@
 import { supabase, isSupabaseAvailable } from '../../shared/services/supabase';
 import { Thought } from '../../shared/types/types';
+import { getCurrentUser } from '../../auth/services/authService';
 
 // 생각 추가 (Supabase + 로컬스토리지 백업)
 export const addThought = async (date: string, thought: Omit<Thought, 'id' | 'timestamp'>): Promise<void> => {
@@ -10,11 +11,20 @@ export const addThought = async (date: string, thought: Omit<Thought, 'id' | 'ti
   }
 
   try {
+    const { user, error: authError } = await getCurrentUser();
+    if (authError || !user) {
+      console.log('사용자 인증이 필요합니다. 로컬스토리지에 저장합니다.');
+      addThoughtToLocalStorage(date, thought);
+      return;
+    }
+
     const { error } = await supabase!.from('thoughts').insert({
       ...thought,
+      user_id: user.id,
       date,
       type: thought.type || 'daily',
-      timestamp: new Date().toISOString()
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
     });
 
     if (error) {
@@ -35,13 +45,19 @@ export const updateThoughtsInSupabase = async (date: string, thoughts: Thought[]
   }
 
   try {
-    console.log('🧠 생각 저장 시도:', { date, thoughtsLength: thoughts?.length, thoughts });
-    
+    const { user, error: authError } = await getCurrentUser();
+    if (authError || !user) {
+      console.log('사용자 인증이 필요합니다.');
+      return;
+    }
+
+    console.log('🧠 생각 저장 시도:', { date, thoughtsLength: thoughts?.length });
+
     if (thoughts && thoughts.length > 0) {
       console.log('✅ 생각 데이터가 있음, Supabase에 저장 시작...');
-      
-      // 기존 생각 삭제 후 새로 추가
-      const { error: deleteError } = await supabase!.from('thoughts').delete().eq('date', date);
+
+      // 기존 생각 삭제 후 새로 추가 (사용자별 필터링)
+      const { error: deleteError } = await supabase!.from('thoughts').delete().eq('date', date).eq('user_id', user.id);
       if (deleteError) {
         console.error('❌ 기존 생각 삭제 중 오류:', deleteError);
       } else {
@@ -50,10 +66,12 @@ export const updateThoughtsInSupabase = async (date: string, thoughts: Thought[]
 
       // 새 생각 추가
       const thoughtsToInsert = thoughts.map(thought => ({
-        // id 필드 제거 - Supabase에서 자동 생성
+        user_id: user.id,
         date,
         text: thought.text,
-        type: thought.type || 'daily'
+        type: thought.type || 'daily',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }));
       
       console.log('💾 삽입할 생각 데이터:', thoughtsToInsert);
@@ -62,7 +80,13 @@ export const updateThoughtsInSupabase = async (date: string, thoughts: Thought[]
       
       if (insertError) {
         console.error('❌ 생각 추가 중 오류:', insertError);
-        console.error('❌ 오류 상세:', { code: insertError.code, message: insertError.message, details: insertError.details });
+        console.error('❌ 오류 상세:', {
+          code: insertError.code,
+          message: insertError.message,
+          details: insertError.details,
+          hint: insertError.hint
+        });
+        console.error('❌ 삽입 시도 데이터:', thoughtsToInsert);
       } else {
         console.log('✅ 생각 Supabase 저장 성공:', insertData);
       }

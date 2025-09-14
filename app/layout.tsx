@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import StructuredData from "../components/StructuredData";
+import AuthProviderWrapper from "../components/AuthProviderWrapper";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,11 +19,11 @@ export const metadata: Metadata = {
     default: "Push Myself - 나를 넘어라",
     template: "%s | Push Myself"
   },
-  description: "목표 설정, 일기 작성, 통계 분석을 통해 자기계발을 도와주는 PWA 앱. 매일 매일 성장하는 당신을 위한 최고의 자기계발 도구입니다.",
+  description: "매일 1% 성장하도록 돕는 나만의 자기계발 도구입니다.",
   keywords: [
-    "자기계발", "다이어리", "목표설정", "생산성", "습관관리", 
-    "일기작성", "통계분석", "PWA", "모바일앱", "성장", 
-    "목표관리", "습관추적", "자기혁신", "개인개발"
+    "자기계발", "생산성", "할일관리", "성장기록", "개인성장",
+    "일기작성", "목표달성", "습관관리", "PWA", "모바일앱",
+    "자기혁신", "체계적 관리", "성장 추적", "자기관리", "성찰"
   ],
   authors: [{ name: "Push Myself Team", url: "https://push-myself.vercel.app" }],
   creator: "Push Myself",
@@ -53,29 +54,41 @@ export const metadata: Metadata = {
     url: 'https://push-myself.vercel.app',
     siteName: 'Push Myself',
     title: "Push Myself - 나를 넘어라",
-    description: "목표 설정, 일기 작성, 통계 분석을 통해 자기계발을 도와주는 PWA 앱. 매일 매일 성장하는 당신을 위한 최고의 자기계발 도구입니다.",
+    description: "매일 1% 성장하도록 돕는 나만의 자기계발 도구입니다.",
     images: [
       {
         url: '/og-image.svg',
         width: 1200,
         height: 630,
-        alt: 'Push Myself - 나를 넘어라 - 자기계발 다이어리 앱',
+        alt: 'Push Myself - 체계적인 자기계발 앱',
         type: 'image/svg+xml',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@pushmyself',
-    creator: '@pushmyself',
+    site: '@push_myself',
+    creator: '@push_myself',
     title: "Push Myself - 나를 넘어라",
-    description: "목표 설정, 일기 작성, 통계 분석을 통해 자기계발을 도와주는 PWA 앱",
+    description: "매일 1% 성장하도록 돕는 나만의 자기계발 도구입니다.",
     images: ['/og-image.svg'],
   },
   manifest: '/manifest.json',
   icons: {
-    icon: '/favicon.ico',
+    icon: [
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48', type: 'image/x-icon' }
+    ],
     shortcut: '/favicon.ico',
+    apple: [
+      { url: '/favicon.ico', sizes: '180x180', type: 'image/x-icon' }
+    ],
+    other: [
+      {
+        rel: 'mask-icon',
+        url: '/favicon.ico',
+        color: '#3B82F6'
+      }
+    ]
   },
   category: 'productivity',
   classification: 'Self-Development Application',
@@ -84,10 +97,12 @@ export const metadata: Metadata = {
     'apple-mobile-web-app-capable': 'yes',
     'apple-mobile-web-app-status-bar-style': 'default',
     'apple-mobile-web-app-title': 'Push Myself',
+    'apple-touch-icon': '/favicon.ico',
     'format-detection': 'telephone=no',
     'mobile-web-app-capable': 'yes',
     'msapplication-config': '/browserconfig.xml',
     'msapplication-TileColor': '#3B82F6',
+    'msapplication-TileImage': '/favicon.ico',
     'msapplication-tap-highlight': 'no',
     'theme-color': '#3B82F6',
   },
@@ -132,7 +147,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <AuthProviderWrapper>
+          {children}
+        </AuthProviderWrapper>
       </body>
     </html>
   );

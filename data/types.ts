@@ -25,7 +25,6 @@ export interface DailyReport {
   date: string;
   summary: string;
   gratitude: string;
-  lessons_learned: string;
   tomorrow_goals: string;
   mood: '매우좋음' | '좋음' | '보통' | '나쁨' | '매우나쁨'; // mood 값 수정
   created_at: string;

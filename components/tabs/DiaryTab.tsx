@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { List, Moon, Plus, Trash2, Heart, Smile, BookOpen, MessageSquare } from 'lucide-react';
+import { List, Moon, Plus, Trash2, Heart, Smile, MessageSquare } from 'lucide-react';
 import { DayData, Diary } from '../../data/types';
 
 // 카테고리 설정
@@ -33,16 +33,14 @@ const DiaryTab: React.FC<DiaryTabProps> = ({
   const [selectedCategory, setSelectedCategory] = useState('other');
   const [summary, setSummary] = useState('');
   const [thankDiary, setThankDiary] = useState('');
-  const [lessonsLearned, setLessonsLearned] = useState('');
   const [tomorrowGoals, setTomorrowGoals] = useState('');
 
   // 컴포넌트 마운트 시에만 초기값 설정
   useEffect(() => {
     setSummary(dayData.dailyReport?.summary || '');
     setThankDiary(dayData.dailyReport?.gratitude || '');
-    setLessonsLearned(dayData.dailyReport?.lessons_learned || '');
     setTomorrowGoals(dayData.dailyReport?.tomorrow_goals || '');
-  }, [dayData.dailyReport?.summary, dayData.dailyReport?.gratitude, dayData.dailyReport?.lessons_learned, dayData.dailyReport?.tomorrow_goals]);
+  }, [dayData.dailyReport?.summary, dayData.dailyReport?.gratitude, dayData.dailyReport?.tomorrow_goals]);
 
   const handleSummaryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -54,10 +52,6 @@ const DiaryTab: React.FC<DiaryTabProps> = ({
     setThankDiary(value);
   };
 
-  const handleLessonsLearnedChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setLessonsLearned(value);
-  };
 
   const handleTomorrowGoalsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -85,15 +79,6 @@ const DiaryTab: React.FC<DiaryTabProps> = ({
     });
   };
 
-  const handleLessonsLearnedBlur = () => {
-    updateCurrentDayData({ 
-      dailyReport: { 
-        ...dayData.dailyReport, 
-        lessons_learned: lessonsLearned,
-        updated_at: new Date().toISOString() 
-      } 
-    });
-  };
 
   const handleTomorrowGoalsBlur = () => {
     updateCurrentDayData({ 
@@ -219,20 +204,6 @@ const DiaryTab: React.FC<DiaryTabProps> = ({
         />
       </div>
 
-      <div className="bg-white p-4 lg:p-6 rounded-2xl border">
-        <h3 className="text-xl lg:text-2xl font-semibold mb-6 flex items-center">
-          <BookOpen className="h-6 w-6 lg:h-8 lg:w-8 mr-3 text-blue-600" />
-          오늘 배운 것
-        </h3>
-        <input
-          type="text"
-          value={lessonsLearned}
-          onChange={handleLessonsLearnedChange}
-          onBlur={handleLessonsLearnedBlur}
-          placeholder="오늘 새롭게 배운 것이나 깨달은 점을 적어보세요"
-          className="w-full p-4 lg:p-5 border rounded-xl focus:ring-2 focus:ring-blue-500 text-lg lg:text-xl"
-        />
-      </div>
 
       <div className="bg-white p-4 lg:p-6 rounded-2xl border">
         <h3 className="text-xl lg:text-2xl font-semibold mb-6 flex items-center">

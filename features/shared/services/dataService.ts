@@ -1,36 +1,33 @@
 import { supabase, isSupabaseAvailable } from './supabase';
-import { 
-  DayData, 
-  Data, 
-  Stats, 
-  MoodData, 
-  DailyReport, 
-  Diary,
-  CompletedItem
+import {
+  DayData,
+  Data,
+  Stats,
+  MoodData,
+  DailyReport
 } from '../types/types';
 import { updateTodosInSupabase } from '../../todos/services/todosService';
 import { updateThoughtsInSupabase } from '../../thoughts/services/thoughtsService';
-import { updateDailyReport as updateDailyReportService, updateDiary as updateDiaryService } from '../../diary/services/dailyReportService';
+import { updateDailyReport as updateDailyReportService } from '../../diary/services/dailyReportService';
+import { getCurrentUser } from '../../auth/services/authService';
 
-// 새로운 데이터 구조 초기화
+// 3-3-3 시스템 데이터 구조 초기화
 export const initializeData = (): DayData => ({
-  todos: [],
-  thoughts: [],
+  todos: [], // DO: 최대 3개
+  thoughts: [], // THINK: 최대 3개 (morning 타입만)
   dailyReport: {
     date: new Date().toISOString().split('T')[0],
-    summary: '',
-    gratitude: '',
-    lessons_learned: '',
-    tomorrow_goals: '',
+    summary: '', // 오늘 한줄
+    gratitude: '', // 감사일기
+    tomorrow_goals: '', // 내일 집중
     mood: '보통',
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   },
-  diary: [],
-  completedItems: []
+  diary: [] // 호환성을 위한 필드 - 향후 제거 예정
 });
 
-// Supabase에서 데이터 로드 (todos와 thoughts만 활성화)
+// Supabase에서 데이터 로드 (사용자별)
 export const loadData = async (): Promise<Data> => {
   // Supabase가 사용 불가능한 경우 로컬스토리지에서 로드
   if (!isSupabaseAvailable()) {
@@ -39,13 +36,18 @@ export const loadData = async (): Promise<Data> => {
   }
 
   try {
-    console.log('Supabase에서 전체 데이터 로드 시작...');
+    const { user, error: authError } = await getCurrentUser();
+    if (authError || !user) {
+      console.log('사용자 인증이 필요합니다. 로컬스토리지에서 데이터를 로드합니다.');
+      return loadDataFromLocalStorage();
+    }
+
+    console.log('Supabase에서 사용자별 전체 데이터 로드 시작...', user.id);
     
-    // todos, thoughts, daily_report, diary 로드
-    const { data: todosData, error: todosError } = await supabase!.from('todos').select('*');
-    const { data: thoughtsData } = await supabase!.from('thoughts').select('*');
-    const { data: dailyReportData } = await supabase!.from('daily_report').select('*');
-    const { data: diaryData } = await supabase!.from('diary').select('*');
+    // todos, thoughts, daily_reports 로드 (사용자별)
+    const { data: todosData, error: todosError } = await supabase!.from('todos').select('*').eq('user_id', user.id);
+    const { data: thoughtsData } = await supabase!.from('thoughts').select('*').eq('user_id', user.id);
+    const { data: dailyReportData } = await supabase!.from('daily_reports').select('*').eq('user_id', user.id);
     
     if (todosError) {
       console.error('Todos 로드 오류:', todosError.message);
@@ -53,11 +55,11 @@ export const loadData = async (): Promise<Data> => {
       return loadDataFromLocalStorage();
     }
 
-    console.log('Supabase 데이터 로드 결과:', {
+    console.log('Supabase 사용자별 데이터 로드 결과:', {
+      user_id: user.id,
       todos: todosData?.length || 0,
       thoughts: thoughtsData?.length || 0,
-      dailyReports: dailyReportData?.length || 0,
-      diary: diaryData?.length || 0
+      dailyReports: dailyReportData?.length || 0
     });
 
     // 데이터를 날짜별로 그룹화
@@ -67,8 +69,7 @@ export const loadData = async (): Promise<Data> => {
     const allDatesSet = new Set([
       ...todosData.map(t => t.date),
       ...(thoughtsData || []).map(t => t.date),
-      ...(dailyReportData || []).map(t => t.date),
-      ...(diaryData || []).map(t => t.date)
+      ...(dailyReportData || []).map(t => t.date)
     ]);
     const allDates = Array.from(allDatesSet);
 
@@ -79,7 +80,6 @@ export const loadData = async (): Promise<Data> => {
       
       const thoughtsForDate = thoughtsData?.filter(t => t.date === date) || [];
       const dailyReportForDate = dailyReportData?.find(d => d.date === date);
-      const diaryForDate = diaryData?.find(d => d.date === date);
         
       result[date] = {
         todos: todosForDate,
@@ -88,13 +88,12 @@ export const loadData = async (): Promise<Data> => {
           date,
           summary: '',
           gratitude: '',
-          lessons_learned: '',
           tomorrow_goals: '',
           mood: '보통',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
-        diary: diaryForDate ? [diaryForDate] : []
+        diary: []
       };
     });
 
@@ -145,10 +144,6 @@ export const updateDailyReport = async (date: string, updates: Partial<DailyRepo
   return updateDailyReportService(date, updates);
 };
 
-// 일기 업데이트 (로컬스토리지만 사용)
-export const updateDiary = async (date: string, updates: Partial<Diary>): Promise<void> => {
-  return updateDiaryService(date, updates);
-};
 
 // 날짜별 전체 데이터 업데이트 (todos는 Supabase, 나머지는 로컬스토리지)
 export const updateDayData = async (date: string, dayData: DayData): Promise<void> => {
@@ -242,10 +237,10 @@ const loadDataFromLocalStorage = (): Data => {
     if (savedData) {
       const parsedData = JSON.parse(savedData);
       
-      // completedItems 필드가 누락된 경우 초기화
+      // 3-3-3 시스템에 필요한 필드들 초기화
       Object.keys(parsedData).forEach(date => {
-        if (!parsedData[date].completedItems) {
-          parsedData[date].completedItems = [];
+        if (!parsedData[date].diary) {
+          parsedData[date].diary = [];
         }
       });
       
@@ -289,20 +284,3 @@ const updateDayDataInLocalStorage = (date: string, dayData: DayData): void => {
   }
 };
 
-const updateCompletedItemsInLocalStorage = (date: string, completedItems: CompletedItem[]): void => {
-  if (typeof window === 'undefined') return;
-  
-  try {
-    const savedData = localStorage.getItem('selfDevelopmentData');
-    const currentData = savedData ? JSON.parse(savedData) : {};
-    
-    if (!currentData[date]) {
-      currentData[date] = initializeData();
-    }
-    
-    currentData[date].completedItems = completedItems;
-    localStorage.setItem('selfDevelopmentData', JSON.stringify(currentData));
-  } catch (error) {
-    console.error('로컬스토리지 completedItems 업데이트 중 오류:', error);
-  }
-};

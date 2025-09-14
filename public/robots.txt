@@ -1,12 +1,14 @@
 User-agent: *
 Allow: /
 
-# Sitemap
+# SEO 최적화
 Sitemap: https://push-myself.vercel.app/sitemap.xml
 
-# Crawl-delay
-Crawl-delay: 1
+# 크롤링 제외 영역 (보안 및 성능)
+Disallow: /auth/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /.well-known/
 
-# Disallow specific paths (if needed in future)
-# Disallow: /api/
-# Disallow: /admin/ 
+# 크롤링 속도 조절
+Crawl-delay: 1 

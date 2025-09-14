@@ -1,16 +1,15 @@
 import { supabase, isSupabaseAvailable } from './supabase';
-import { 
-  DayData, 
-  Data, 
-  Stats, 
-  MoodData, 
-  DailyReport, 
-  Diary,
+import {
+  DayData,
+  Data,
+  Stats,
+  MoodData,
+  DailyReport,
   Todo
-} from '../data/types';
+} from '../features/shared/types/types';
 import { updateTodosInSupabase } from '../features/todos/services/todosService';
 import { updateThoughtsInSupabase } from '../features/thoughts/services/thoughtsService';
-import { updateDailyReport as updateDailyReportService, updateDiary as updateDiaryService } from '../features/diary/services/dailyReportService';
+import { updateDailyReport as updateDailyReportService } from '../features/diary/services/dailyReportService';
 
 // 새로운 데이터 구조 초기화
 export const initializeData = (): DayData => ({
@@ -20,7 +19,6 @@ export const initializeData = (): DayData => ({
     date: new Date().toISOString().split('T')[0],
     summary: '',
     gratitude: '',
-    lessons_learned: '',
     tomorrow_goals: '',
     mood: '보통',
     created_at: new Date().toISOString(),
@@ -87,7 +85,6 @@ export const loadData = async (): Promise<Data> => {
           date,
           summary: '',
           gratitude: '',
-          lessons_learned: '',
           tomorrow_goals: '',
           mood: '보통',
           created_at: new Date().toISOString(),
@@ -144,10 +141,6 @@ export const updateDailyReport = async (date: string, updates: Partial<DailyRepo
   return updateDailyReportService(date, updates);
 };
 
-// 일기 업데이트 (로컬스토리지만 사용)
-export const updateDiary = async (date: string, updates: Partial<Diary>): Promise<void> => {
-  return updateDiaryService(date, updates);
-};
 
 // 날짜별 전체 데이터 업데이트 (todos는 Supabase, 나머지는 로컬스토리지)
 export const updateDayData = async (date: string, dayData: DayData): Promise<void> => {
@@ -298,7 +291,6 @@ export const addTodo = async (date: string, todoData: Partial<Todo>): Promise<To
       completed: false,
       priority: todoData.priority || 'medium',
       order_index: todoData.order_index || 0,
-      order: todoData.order_index || 0,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     };

@@ -1,7 +1,7 @@
 {
   "name": "Push Myself - 나를 넘어라",
   "short_name": "Push Myself",
-  "description": "목표 설정, 일기 작성, 통계 분석을 통해 자기계발을 도와주는 앱",
+  "description": "매일 1% 성장하도록 돕는 나만의 자기계발 도구입니다.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
@@ -13,13 +13,26 @@
   "icons": [
     {
       "src": "/favicon.ico",
-      "sizes": "32x32",
-      "type": "image/x-icon"
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon",
+      "purpose": "any"
     },
     {
-      "src": "/icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/favicon.ico",
+      "sizes": "180x180",
+      "type": "image/x-icon",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "192x192",
+      "type": "image/x-icon",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "512x512",
+      "type": "image/x-icon",
       "purpose": "any maskable"
     }
   ],
