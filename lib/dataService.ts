@@ -38,11 +38,10 @@ export const loadData = async (): Promise<Data> => {
   try {
     console.log('Supabase에서 전체 데이터 로드 시작...');
     
-    // todos, thoughts, daily_report, diary 로드
+    // todos, thoughts, daily_reports 로드 (diary는 제거됨)
     const { data: todosData, error: todosError } = await supabase!.from('todos').select('*');
     const { data: thoughtsData } = await supabase!.from('thoughts').select('*');
-    const { data: dailyReportData } = await supabase!.from('daily_report').select('*');
-    const { data: diaryData } = await supabase!.from('diary').select('*');
+    const { data: dailyReportData } = await supabase!.from('daily_reports').select('*');
     
     if (todosError) {
       console.error('Todos 로드 오류:', todosError.message);
@@ -53,8 +52,7 @@ export const loadData = async (): Promise<Data> => {
     console.log('Supabase 데이터 로드 결과:', {
       todos: todosData?.length || 0,
       thoughts: thoughtsData?.length || 0,
-      dailyReports: dailyReportData?.length || 0,
-      diary: diaryData?.length || 0
+      dailyReports: dailyReportData?.length || 0
     });
 
     // 데이터를 날짜별로 그룹화
@@ -64,8 +62,7 @@ export const loadData = async (): Promise<Data> => {
     const allDatesSet = new Set([
       ...todosData.map(t => t.date),
       ...(thoughtsData || []).map(t => t.date),
-      ...(dailyReportData || []).map(t => t.date),
-      ...(diaryData || []).map(t => t.date)
+      ...(dailyReportData || []).map(t => t.date)
     ]);
     const allDates = Array.from(allDatesSet);
 
@@ -76,8 +73,7 @@ export const loadData = async (): Promise<Data> => {
       
       const thoughtsForDate = thoughtsData?.filter(t => t.date === date) || [];
       const dailyReportForDate = dailyReportData?.find(d => d.date === date);
-      const diaryForDate = diaryData?.find(d => d.date === date);
-        
+
       result[date] = {
         todos: todosForDate,
         thoughts: thoughtsForDate,
@@ -90,7 +86,7 @@ export const loadData = async (): Promise<Data> => {
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         },
-        diary: diaryForDate ? [diaryForDate] : []
+        diary: [] // diary 기능은 더 이상 사용하지 않음
       };
     });
 
