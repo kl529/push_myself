@@ -23,9 +23,7 @@ export const signInWithGoogle = async (): Promise<{ data?: any; error?: any }> =
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
-        },
-        // PKCE flow 사용으로 보안 강화 (토큰이 URL에 노출되지 않음)
-        flowType: 'pkce'
+        }
       },
     });
 
