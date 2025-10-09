@@ -7,6 +7,10 @@
 ![Next.js](https://img.shields.io/badge/Next.js-15.4.5-black)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
+## 💻 사이트 링크
+- https://push-myself-git-main-lyvas-projects.vercel.app/
+- vercel로 배포 후, 도메인은 따로 구매하지 않고 사용중입니다.
+
 ## 🎯 프로젝트 소개
 
 Push Myself는 **"본질에 집중하자"**는 철학 하에 개발된 개인 성장 추적 PWA입니다. 복잡한 기능들을 걷어내고 **3-3-3 시스템**에만 집중하여 매일의 성장을 체계적으로 관리할 수 있습니다.
