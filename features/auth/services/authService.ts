@@ -24,7 +24,7 @@ export const signInWithGoogle = async (): Promise<{ data?: any; error?: any }> =
           access_type: 'offline',
           prompt: 'consent',
         },
-        flowType: 'pkce', // PKCE Flow 사용 (보안 강화)
+        // PKCE Flow는 Supabase Auth v2+에서 기본값
       },
     });
 
