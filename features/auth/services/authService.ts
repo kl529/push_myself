@@ -23,7 +23,8 @@ export const signInWithGoogle = async (): Promise<{ data?: any; error?: any }> =
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
-        }
+        },
+        flowType: 'pkce', // PKCE Flow 사용 (보안 강화)
       },
     });
 
